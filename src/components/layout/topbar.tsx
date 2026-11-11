@@ -1,10 +1,27 @@
 "use client";
 
 import * as React from "react";
-import { Search, Bell, Plus, ChevronDown, Building2, Command } from "lucide-react";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { Search, Bell, Plus, ChevronDown, Building2, Command, LogOut, LogIn } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Topbar() {
+  const { data: session } = useSession();
+  const [profileOpen, setProfileOpen] = React.useState(false);
+
+  const userInitials = session?.user?.name
+    ? session.user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "AR";
+
+  const userName = session?.user?.name || "Alex Rivera";
+  const userRole = session?.user?.role || "Tech Lead (Admin)";
+
   return (
     <header className="border-border bg-card/80 flex h-16 w-full items-center justify-between border-b px-6 backdrop-blur-md">
       {/* Left: Workspace Switcher */}
@@ -59,15 +76,52 @@ export function Topbar() {
         {/* Theme Toggle */}
         <ThemeToggle />
 
-        {/* User Profile */}
-        <div className="flex items-center gap-2 pl-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-xs font-bold text-white shadow-xs">
-            AR
-          </div>
-          <div className="hidden flex-col text-left text-xs lg:flex">
-            <span className="text-foreground font-semibold">Alex Rivera</span>
-            <span className="text-muted-foreground text-[11px]">Tech Lead (Admin)</span>
-          </div>
+        {/* User Profile / Auth Dropdown */}
+        <div className="relative pl-2">
+          {session ? (
+            <div>
+              <button
+                type="button"
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="hover:bg-muted flex items-center gap-2 rounded-xl p-1 text-left transition-colors"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-xs font-bold text-white shadow-xs">
+                  {userInitials}
+                </div>
+                <div className="hidden flex-col text-left text-xs lg:flex">
+                  <span className="text-foreground font-semibold">{userName}</span>
+                  <span className="text-muted-foreground text-[11px]">{userRole}</span>
+                </div>
+                <ChevronDown className="text-muted-foreground hidden h-3.5 w-3.5 lg:block" />
+              </button>
+
+              {profileOpen && (
+                <div className="border-border bg-card absolute right-0 mt-2 w-48 rounded-xl border p-1.5 shadow-lg">
+                  <div className="border-border border-b px-3 py-2">
+                    <p className="text-foreground text-xs font-semibold">{userName}</p>
+                    <p className="text-muted-foreground truncate text-[11px]">
+                      {session.user.email}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="border-border bg-card text-foreground hover:bg-muted inline-flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-semibold shadow-xs transition-colors"
+            >
+              <LogIn className="text-muted-foreground h-3.5 w-3.5" />
+              <span>Sign In</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>

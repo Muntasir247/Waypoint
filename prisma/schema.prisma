@@ -541,3 +541,4 @@ model SavedFilter {
 
   @@index([userId, workspaceId])
 }
+

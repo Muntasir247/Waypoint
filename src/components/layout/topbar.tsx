@@ -73,17 +73,21 @@ export function Topbar() {
 
       {/* Center: Global Search */}
       <div className="hidden max-w-md flex-1 px-4 md:block">
-        <div className="relative">
+        <button
+          type="button"
+          onClick={() =>
+            window.dispatchEvent(
+              new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }),
+            )
+          }
+          className="border-border bg-muted/30 text-muted-foreground hover:bg-background relative flex h-9 w-full items-center rounded-xl border pr-12 pl-9 text-xs shadow-2xs transition-all focus:border-indigo-500"
+        >
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-          <input
-            type="search"
-            placeholder="Search tasks, projects, members... (Cmd+K)"
-            className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground focus:bg-background h-9 w-full rounded-xl border pr-12 pl-9 text-xs focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-hidden"
-          />
+          <span className="truncate">Search tasks, projects, members...</span>
           <kbd className="border-border bg-muted text-muted-foreground pointer-events-none absolute top-1/2 right-2.5 inline-flex h-5 -translate-y-1/2 items-center gap-0.5 rounded border px-1.5 font-mono text-[10px] font-medium">
             <Command className="h-3 w-3" />K
           </kbd>
-        </div>
+        </button>
       </div>
 
       {/* Right: Actions, Notifications, Theme, Profile */}

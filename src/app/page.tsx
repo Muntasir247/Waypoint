@@ -2,16 +2,34 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { AppShell } from "@/components/layout/app-shell";
-import { Plus, UserPlus, ArrowRight } from "lucide-react";
+import { Plus, UserPlus, ArrowRight, ExternalLink, Loader2 } from "lucide-react";
 import { CreateProjectModal } from "@/components/projects/create-project-modal";
 import { CreateTaskModal } from "@/components/tasks/create-task-modal";
 import { ProjectDashboardView } from "@/components/tech-lead/project-dashboard-view";
+import { LandingPageView } from "@/components/landing/landing-page-view";
 
 export default function HomePage() {
+  const { data: session, status } = useSession();
   const [isCreateProjectOpen, setIsCreateProjectOpen] = React.useState(false);
   const [isCreateTaskOpen, setIsCreateTaskOpen] = React.useState(false);
   const [refreshKey, setRefreshKey] = React.useState(0);
+  const [forceLanding, setForceLanding] = React.useState(false);
+
+  // If loading session, show friendly loading skeleton or landing
+  if (status === "loading") {
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  // If unauthenticated or user explicitly requested landing page, show Landing Page
+  if (status === "unauthenticated" || !session?.user || forceLanding) {
+    return <LandingPageView />;
+  }
 
   return (
     <AppShell>
@@ -32,12 +50,22 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setForceLanding(true)}
+              className="border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium shadow-xs transition-colors"
+              title="View Public Marketing Landing Page"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              <span>Landing Page</span>
+            </button>
+
             <Link
               href="/workload"
               className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-xs transition-colors"
             >
-              <span>Workload View</span>
+              <span>Workload</span>
               <ArrowRight className="text-muted-foreground h-3.5 w-3.5" />
             </Link>
             <Link

@@ -14,8 +14,12 @@
     "format:write": "prettier --write .",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "seed": "node --env-file=.env.local --experimental-strip-types prisma/seed.ts",
     "postinstall": "prisma skills sync || exit 0",
     "prepare": "husky"
+  },
+  "prisma": {
+    "seed": "node --env-file=.env.local --experimental-strip-types prisma/seed.ts"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

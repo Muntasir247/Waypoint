@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { assertCan, canDemoteOrRemoveAdmin } from "@/lib/permissions";
+import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
 import {
   updateRoleSchema,
   updateAvailabilitySchema,
@@ -73,6 +74,17 @@ export async function getWorkspaceMembersAction(workspaceId: string) {
       })),
     })),
   };
+}
+
+/**
+ * Retrieves members of the current active workspace.
+ */
+export async function getMembersAction() {
+  const { workspace } = await getCurrentUserAndWorkspace();
+  if (!workspace) {
+    return { error: "No active workspace found", members: [] };
+  }
+  return getWorkspaceMembersAction(workspace.id);
 }
 
 /**

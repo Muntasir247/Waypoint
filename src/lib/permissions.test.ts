@@ -75,10 +75,13 @@ describe("RBAC Permissions Matrix (Section 5)", () => {
     const adminOnlyActions: PermissionAction[] = [
       "create:projects",
       "edit:projects",
+      "delete:projects",
       "create:sprints",
       "edit:sprints",
+      "delete:sprints",
       "create:milestones",
       "edit:milestones",
+      "delete:milestones",
       "assign:tasks",
       "delete:task",
       "manage:members",

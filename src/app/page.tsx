@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+import Link from "next/link";
 import { AppShell } from "@/components/layout/app-shell";
 import {
   Rocket,
@@ -14,8 +16,13 @@ import {
   Database,
   Sparkles,
 } from "lucide-react";
+import { CreateProjectModal } from "@/components/projects/create-project-modal";
+import { CreateTaskModal } from "@/components/tasks/create-task-modal";
 
 export default function HomePage() {
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = React.useState(false);
+  const [isCreateTaskOpen, setIsCreateTaskOpen] = React.useState(false);
+
   return (
     <AppShell>
       <div className="space-y-8">
@@ -36,15 +43,16 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <a
+            <Link
               href="/team"
               className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-xs transition-colors"
             >
               <UserPlus className="text-muted-foreground h-3.5 w-3.5" />
               <span>Invite Member</span>
-            </a>
+            </Link>
             <button
               type="button"
+              onClick={() => setIsCreateProjectOpen(true)}
               className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-xs transition-colors"
             >
               <Plus className="text-muted-foreground h-3.5 w-3.5" />
@@ -52,6 +60,7 @@ export default function HomePage() {
             </button>
             <button
               type="button"
+              onClick={() => setIsCreateTaskOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-indigo-700 active:scale-98"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -284,6 +293,13 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
+        <CreateProjectModal
+          isOpen={isCreateProjectOpen}
+          onClose={() => setIsCreateProjectOpen(false)}
+        />
+        <CreateTaskModal isOpen={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
       </div>
     </AppShell>
   );

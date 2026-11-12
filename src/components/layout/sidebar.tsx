@@ -29,6 +29,7 @@ interface NavItem {
 
 const mainNavItems: NavItem[] = [
   { label: "Overview", href: "/", icon: Layers },
+  { label: "Projects", href: "/projects", icon: FolderGit2 },
   { label: "Team & Members", href: "/team", icon: Users2 },
   { label: "My Tasks", href: "/my-tasks", icon: CheckSquare, badge: 8, badgeVariant: "primary" },
   { label: "Kanban Board", href: "/board", icon: Kanban },

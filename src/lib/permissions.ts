@@ -6,10 +6,13 @@ export type PermissionAction =
   | "view:tasks"
   | "create:projects"
   | "edit:projects"
+  | "delete:projects"
   | "create:sprints"
   | "edit:sprints"
+  | "delete:sprints"
   | "create:milestones"
   | "edit:milestones"
+  | "delete:milestones"
   | "create:tasks"
   | "edit:task"
   | "assign:tasks"
@@ -96,10 +99,13 @@ export function can(
     // -------------------------------------------------------------------------
     case "create:projects":
     case "edit:projects":
+    case "delete:projects":
     case "create:sprints":
     case "edit:sprints":
+    case "delete:sprints":
     case "create:milestones":
     case "edit:milestones":
+    case "delete:milestones":
     case "assign:tasks":
     case "delete:task":
     case "manage:members":

@@ -26,6 +26,7 @@ import { ListView } from "@/components/views/list-view";
 import { CalendarView } from "@/components/views/calendar-view";
 import { TimelineView } from "@/components/views/timeline-view";
 import { TaskItem } from "@/components/views/types";
+import { ProjectDashboardView } from "@/components/tech-lead/project-dashboard-view";
 
 export type ProjectDetailData = NonNullable<
   Awaited<ReturnType<typeof getProjectDetailAction>>["project"]
@@ -232,71 +233,7 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
       {/* Tab Content: OVERVIEW */}
       {activeTab === "overview" && (
         <div className="space-y-6">
-          {/* Quick Metrics Cards */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="border-border bg-card rounded-2xl border p-4 shadow-xs">
-              <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Progress
-              </span>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-foreground text-2xl font-bold">
-                  {project.metrics.progressPercent}%
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  ({project.metrics.completedTasks}/{project.metrics.totalTasks} tasks)
-                </span>
-              </div>
-              <div className="bg-muted mt-2.5 h-1.5 w-full overflow-hidden rounded-full">
-                <div
-                  className="h-full rounded-full bg-emerald-500"
-                  style={{ width: `${project.metrics.progressPercent}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="border-border bg-card rounded-2xl border p-4 shadow-xs">
-              <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Active Work
-              </span>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-foreground text-2xl font-bold">
-                  {project.metrics.inProgressTasks}
-                </span>
-                <span className="text-xs text-sky-600 dark:text-sky-400">in progress</span>
-              </div>
-              <p className="text-muted-foreground mt-1 text-xs">Currently in active cycle</p>
-            </div>
-
-            <div className="border-border bg-card rounded-2xl border p-4 shadow-xs">
-              <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Blockers
-              </span>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span
-                  className={`text-2xl font-bold ${project.metrics.blockedTasks > 0 ? "text-rose-600" : "text-foreground"}`}
-                >
-                  {project.metrics.blockedTasks}
-                </span>
-                <span className="text-muted-foreground text-xs">blocked tasks</span>
-              </div>
-              <p className="text-muted-foreground mt-1 text-xs">Needs tech lead unblocking</p>
-            </div>
-
-            <div className="border-border bg-card rounded-2xl border p-4 shadow-xs">
-              <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                Story Points
-              </span>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-foreground font-mono text-2xl font-bold">
-                  {project.metrics.totalPoints}
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  ({project.metrics.completedPoints} pts done)
-                </span>
-              </div>
-              <p className="text-muted-foreground mt-1 text-xs">Weighted engineering effort</p>
-            </div>
-          </div>
+          <ProjectDashboardView projectId={project.id} projectName={project.name} />
 
           {/* Sprints & Milestones Quick Grid */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

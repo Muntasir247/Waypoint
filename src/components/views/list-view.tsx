@@ -6,6 +6,7 @@ import { TaskStatus, Priority } from "@prisma/client";
 import { TaskItem, STATUS_CONFIG, PRIORITY_CONFIG } from "./types";
 import { formatDate, isOverdue, isDueSoon } from "@/lib/date-utils";
 import { updateTaskStatusAction } from "@/features/tasks/actions";
+import { BulkActionsToolbar } from "@/components/tech-lead/bulk-actions-toolbar";
 
 interface ListViewProps {
   tasks: TaskItem[];
@@ -28,6 +29,53 @@ export function ListView({
   const [groupBy, setGroupBy] = React.useState<GroupByOption>("status");
   const [sortBy, setSortBy] = React.useState<SortByOption>("priority");
   const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>([]);
+
+  const toggleTaskSelection = (taskId: string, e: React.MouseEvent | React.ChangeEvent) => {
+    e.stopPropagation();
+    setSelectedTaskIds((prev) =>
+      prev.includes(taskId) ? prev.filter((id) => id !== taskId) : [...prev, taskId],
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedTaskIds.length === tasks.length) {
+      setSelectedTaskIds([]);
+    } else {
+      setSelectedTaskIds(tasks.map((t) => t.id));
+    }
+  };
+
+  // Derive unique members and sprints from tasks
+  const { memberOptions, sprintOptions } = React.useMemo(() => {
+    const memMap = new Map<
+      string,
+      { id: string; name: string; email: string; avatarUrl?: string | null }
+    >();
+    const sprMap = new Map<string, { id: string; name: string }>();
+
+    tasks.forEach((t) => {
+      if (t.assignee) {
+        memMap.set(t.assignee.id, {
+          id: t.assignee.id,
+          name: t.assignee.name,
+          email: t.assignee.email,
+          avatarUrl: t.assignee.image,
+        });
+      }
+      if (t.sprint) {
+        sprMap.set(t.sprint.id, {
+          id: t.sprint.id,
+          name: t.sprint.name,
+        });
+      }
+    });
+
+    return {
+      memberOptions: Array.from(memMap.values()),
+      sprintOptions: Array.from(sprMap.values()),
+    };
+  }, [tasks]);
 
   // Handle inline quick status change
   async function handleQuickStatusChange(taskId: string, newStatus: TaskStatus) {
@@ -141,6 +189,24 @@ export function ListView({
       {/* Controls Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
+          {currentUserRole !== "VIEWER" && tasks.length > 0 && (
+            <button
+              type="button"
+              onClick={toggleSelectAll}
+              className="border-border bg-card text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={selectedTaskIds.length === tasks.length && tasks.length > 0}
+                onChange={toggleSelectAll}
+                className="border-border pointer-events-none h-3.5 w-3.5 cursor-pointer rounded text-indigo-600 focus:ring-indigo-500"
+              />
+              <span>
+                {selectedTaskIds.length > 0 ? `${selectedTaskIds.length} Selected` : "Select All"}
+              </span>
+            </button>
+          )}
+
           <span className="text-muted-foreground font-medium">Group by:</span>
           <select
             value={groupBy}
@@ -222,6 +288,16 @@ export function ListView({
                       >
                         {/* Left Side: Checkbox, Project, Title */}
                         <div className="flex min-w-0 flex-1 items-center gap-3">
+                          {currentUserRole !== "VIEWER" && (
+                            <input
+                              type="checkbox"
+                              checked={selectedTaskIds.includes(task.id)}
+                              onChange={(e) => toggleTaskSelection(task.id, e)}
+                              onClick={(e) => e.stopPropagation()}
+                              className="border-border h-4 w-4 shrink-0 cursor-pointer rounded text-indigo-600 focus:ring-indigo-500"
+                            />
+                          )}
+
                           <button
                             type="button"
                             onClick={(e) => {
@@ -344,6 +420,18 @@ export function ListView({
           })}
         </div>
       )}
+
+      {/* Bulk Actions Toolbar */}
+      <BulkActionsToolbar
+        selectedTaskIds={selectedTaskIds}
+        onClearSelection={() => setSelectedTaskIds([])}
+        members={memberOptions}
+        sprints={sprintOptions}
+        onSuccess={() => {
+          setSelectedTaskIds([]);
+          onRefresh?.();
+        }}
+      />
     </div>
   );
 }

@@ -20,6 +20,7 @@ import { Plus, AlertCircle, ShieldAlert } from "lucide-react";
 import { TaskItem, STATUS_CONFIG } from "./types";
 import { TaskCard } from "./task-card";
 import { moveTaskAction } from "@/features/tasks/actions";
+import { BulkActionsToolbar } from "@/components/tech-lead/bulk-actions-toolbar";
 
 interface KanbanViewProps {
   tasks: TaskItem[];
@@ -42,9 +43,15 @@ const KANBAN_COLUMNS: TaskStatus[] = [
 function SortableTaskCard({
   task,
   onSelectTask,
+  isSelected,
+  onToggleSelect,
+  canSelect,
 }: {
   task: TaskItem;
   onSelectTask: (taskId: string) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (taskId: string) => void;
+  canSelect?: boolean;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -63,6 +70,9 @@ function SortableTaskCard({
         onSelectTask={onSelectTask}
         isDragging={isDragging}
         dragHandleProps={{ ...attributes, ...listeners }}
+        isSelected={isSelected}
+        onToggleSelect={onToggleSelect}
+        canSelect={canSelect}
       />
     </div>
   );
@@ -74,11 +84,17 @@ function KanbanColumn({
   tasks,
   onSelectTask,
   onAddTask,
+  selectedTaskIds = [],
+  onToggleSelect,
+  canSelect = false,
 }: {
   status: TaskStatus;
   tasks: TaskItem[];
   onSelectTask: (taskId: string) => void;
   onAddTask?: (status: TaskStatus) => void;
+  selectedTaskIds?: string[];
+  onToggleSelect?: (taskId: string) => void;
+  canSelect?: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
@@ -129,7 +145,14 @@ function KanbanColumn({
       <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
         <div className="flex min-h-[300px] flex-1 flex-col gap-2.5 overflow-y-auto">
           {tasks.map((task) => (
-            <SortableTaskCard key={task.id} task={task} onSelectTask={onSelectTask} />
+            <SortableTaskCard
+              key={task.id}
+              task={task}
+              onSelectTask={onSelectTask}
+              isSelected={selectedTaskIds.includes(task.id)}
+              onToggleSelect={onToggleSelect}
+              canSelect={canSelect}
+            />
           ))}
 
           {tasks.length === 0 && (
@@ -153,6 +176,43 @@ export function KanbanView({
 }: KanbanViewProps) {
   const [activeTask, setActiveTask] = React.useState<TaskItem | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState<string[]>([]);
+
+  const toggleTaskSelection = (id: string) => {
+    setSelectedTaskIds((prev) =>
+      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
+    );
+  };
+
+  const { memberOptions, sprintOptions } = React.useMemo(() => {
+    const memMap = new Map<
+      string,
+      { id: string; name: string; email: string; avatarUrl?: string | null }
+    >();
+    const sprMap = new Map<string, { id: string; name: string }>();
+
+    tasks.forEach((t) => {
+      if (t.assignee) {
+        memMap.set(t.assignee.id, {
+          id: t.assignee.id,
+          name: t.assignee.name,
+          email: t.assignee.email,
+          avatarUrl: t.assignee.image,
+        });
+      }
+      if (t.sprint) {
+        sprMap.set(t.sprint.id, {
+          id: t.sprint.id,
+          name: t.sprint.name,
+        });
+      }
+    });
+
+    return {
+      memberOptions: Array.from(memMap.values()),
+      sprintOptions: Array.from(sprMap.values()),
+    };
+  }, [tasks]);
 
   // Blocked Reason Prompt Modal state
   const [pendingBlockedMove, setPendingBlockedMove] = React.useState<{
@@ -323,6 +383,9 @@ export function KanbanView({
               tasks={columnsData[status] || []}
               onSelectTask={onSelectTask}
               onAddTask={onAddTask}
+              selectedTaskIds={selectedTaskIds}
+              onToggleSelect={toggleTaskSelection}
+              canSelect={currentUserRole !== "VIEWER"}
             />
           ))}
         </div>
@@ -381,6 +444,18 @@ export function KanbanView({
           </div>
         </div>
       )}
+
+      {/* Bulk Actions Toolbar */}
+      <BulkActionsToolbar
+        selectedTaskIds={selectedTaskIds}
+        onClearSelection={() => setSelectedTaskIds([])}
+        members={memberOptions}
+        sprints={sprintOptions}
+        onSuccess={() => {
+          setSelectedTaskIds([]);
+          onRefresh?.();
+        }}
+      />
     </div>
   );
 }

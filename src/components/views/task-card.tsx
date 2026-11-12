@@ -17,6 +17,9 @@ interface TaskCardProps {
   onSelectTask?: (taskId: string) => void;
   isDragging?: boolean;
   dragHandleProps?: Record<string, unknown>;
+  isSelected?: boolean;
+  onToggleSelect?: (taskId: string) => void;
+  canSelect?: boolean;
 }
 
 export function TaskCard({
@@ -24,6 +27,9 @@ export function TaskCard({
   onSelectTask,
   isDragging = false,
   dragHandleProps,
+  isSelected = false,
+  onToggleSelect,
+  canSelect = false,
 }: TaskCardProps) {
   const priorityCfg = PRIORITY_CONFIG[task.priority];
   const overdue = isOverdue(task.dueDate, task.status);
@@ -44,11 +50,20 @@ export function TaskCard({
       onClick={() => onSelectTask?.(task.id)}
       className={`border-border bg-card group relative cursor-pointer rounded-2xl border p-4 shadow-2xs transition-all hover:border-slate-300 hover:shadow-xs dark:hover:border-slate-700 ${
         isDragging ? "scale-105 rotate-2 border-indigo-500 opacity-90 shadow-xl" : ""
-      }`}
+      } ${isSelected ? "border-indigo-500 bg-indigo-50/10 ring-2 ring-indigo-500/20 dark:bg-indigo-950/10" : ""}`}
     >
       {/* Top Meta Bar */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5">
+          {canSelect && onToggleSelect && (
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(task.id)}
+              onClick={(e) => e.stopPropagation()}
+              className="border-border h-3.5 w-3.5 cursor-pointer rounded text-indigo-600 focus:ring-indigo-500"
+            />
+          )}
           {dragHandleProps && (
             <div
               {...dragHandleProps}

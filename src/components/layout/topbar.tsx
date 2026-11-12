@@ -3,12 +3,42 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Search, Bell, Plus, ChevronDown, Building2, Command, LogOut, LogIn } from "lucide-react";
+import { Search, Bell, Plus, ChevronDown, Command, LogOut, LogIn, User } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import {
+  WorkspaceSwitcher,
+  type WorkspaceItem,
+} from "@/features/workspaces/components/workspace-switcher";
+import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
 
 export function Topbar() {
   const { data: session } = useSession();
   const [profileOpen, setProfileOpen] = React.useState(false);
+  const [workspaces, setWorkspaces] = React.useState<WorkspaceItem[]>([]);
+  const [currentWorkspaceName, setCurrentWorkspaceName] =
+    React.useState<string>("Acme Engineering");
+  const [currentRole, setCurrentRole] = React.useState<string>("ADMIN");
+
+  React.useEffect(() => {
+    let mounted = true;
+    if (session?.user) {
+      getCurrentUserAndWorkspace().then((res) => {
+        if (!mounted) return;
+        if (res.workspace) {
+          setCurrentWorkspaceName(res.workspace.name);
+        }
+        if (res.membership) {
+          setCurrentRole(res.membership.role);
+        }
+        if (res.workspaces) {
+          setWorkspaces(res.workspaces);
+        }
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [session]);
 
   const userInitials = session?.user?.name
     ? session.user.name
@@ -20,20 +50,22 @@ export function Topbar() {
     : "AR";
 
   const userName = session?.user?.name || "Alex Rivera";
-  const userRole = session?.user?.role || "Tech Lead (Admin)";
+  const userRole =
+    currentRole === "ADMIN"
+      ? "Tech Lead (Admin)"
+      : currentRole === "DEVELOPER"
+        ? "Developer"
+        : "Viewer";
 
   return (
     <header className="border-border bg-card/80 flex h-16 w-full items-center justify-between border-b px-6 backdrop-blur-md">
       {/* Left: Workspace Switcher */}
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          className="border-border bg-muted/50 text-foreground hover:bg-muted flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors"
-        >
-          <Building2 className="h-4 w-4 text-indigo-500" />
-          <span className="font-semibold">Acme Engineering</span>
-          <ChevronDown className="text-muted-foreground h-3.5 w-3.5" />
-        </button>
+        <WorkspaceSwitcher
+          initialWorkspaces={workspaces}
+          currentWorkspaceName={currentWorkspaceName}
+          currentRole={currentRole}
+        />
       </div>
 
       {/* Center: Global Search */}
@@ -85,8 +117,17 @@ export function Topbar() {
                 onClick={() => setProfileOpen(!profileOpen)}
                 className="hover:bg-muted flex items-center gap-2 rounded-xl p-1 text-left transition-colors"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-xs font-bold text-white shadow-xs">
-                  {userInitials}
+                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 text-xs font-bold text-white shadow-xs">
+                  {session.user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={session.user.image}
+                      alt={userName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    userInitials
+                  )}
                 </div>
                 <div className="hidden flex-col text-left text-xs lg:flex">
                   <span className="text-foreground font-semibold">{userName}</span>
@@ -96,21 +137,35 @@ export function Topbar() {
               </button>
 
               {profileOpen && (
-                <div className="border-border bg-card absolute right-0 mt-2 w-48 rounded-xl border p-1.5 shadow-lg">
-                  <div className="border-border border-b px-3 py-2">
-                    <p className="text-foreground text-xs font-semibold">{userName}</p>
-                    <p className="text-muted-foreground truncate text-[11px]">
-                      {session.user.email}
-                    </p>
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                  <div className="border-border bg-card animate-in fade-in-0 zoom-in-95 absolute right-0 z-50 mt-2 w-48 rounded-xl border p-1.5 shadow-lg">
+                    <div className="border-border border-b px-3 py-2">
+                      <p className="text-foreground text-xs font-semibold">{userName}</p>
+                      <p className="text-muted-foreground truncate text-[11px]">
+                        {session.user.email}
+                      </p>
+                    </div>
+
+                    <Link
+                      href="/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="text-foreground hover:bg-muted flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-colors"
+                    >
+                      <User className="text-muted-foreground h-3.5 w-3.5" />
+                      <span>My Profile</span>
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => signOut({ callbackUrl: "/login" })}
+                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                    >
+                      <LogOut className="h-3.5 w-3.5" />
+                      <span>Sign Out</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => signOut({ callbackUrl: "/login" })}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                  >
-                    <LogOut className="h-3.5 w-3.5" />
-                    <span>Sign Out</span>
-                  </button>
-                </div>
+                </>
               )}
             </div>
           ) : (

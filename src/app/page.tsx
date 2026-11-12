@@ -36,13 +36,13 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <button
-              type="button"
+            <a
+              href="/team"
               className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-xs transition-colors"
             >
               <UserPlus className="text-muted-foreground h-3.5 w-3.5" />
               <span>Invite Member</span>
-            </button>
+            </a>
             <button
               type="button"
               className="border-border bg-card text-foreground hover:bg-muted inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-xs transition-colors"

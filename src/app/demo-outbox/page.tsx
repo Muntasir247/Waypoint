@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { getMockEmails, clearMockEmails } from "@/features/email/actions";
+import { sendWorkspaceDigestsAction } from "@/features/digests/actions";
 import { toast } from "sonner";
 
 interface MockEmailRecord {
@@ -67,6 +68,25 @@ export default function DemoOutboxPage() {
     };
   }, []);
 
+  const [isSimulating, setIsSimulating] = React.useState(false);
+
+  const handleSimulateDigests = async () => {
+    setIsSimulating(true);
+    try {
+      const res = await sendWorkspaceDigestsAction();
+      if (res.sentCount > 0) {
+        toast.success(`Demo: simulated ${res.sentCount} daily digests, see outbox below.`);
+        await loadEmails();
+      } else {
+        toast.info("No active tasks found for digest generation, or already up to date.");
+      }
+    } catch {
+      toast.error("Failed to simulate digests.");
+    } finally {
+      setIsSimulating(false);
+    }
+  };
+
   const handleClear = async () => {
     if (!confirm("Are you sure you want to clear all mock emails?")) return;
     try {
@@ -84,7 +104,8 @@ export default function DemoOutboxPage() {
       selectedFilter === "ALL" ||
       (selectedFilter === "VERIFY_EMAIL" && email.kind === "VERIFY_EMAIL") ||
       (selectedFilter === "PASSWORD_RESET" && email.kind === "PASSWORD_RESET") ||
-      (selectedFilter === "INVITE" && email.kind === "INVITE");
+      (selectedFilter === "INVITE" && email.kind === "INVITE") ||
+      (selectedFilter === "DIGEST" && email.kind === "DIGEST");
 
     const matchesSearch =
       email.to.toLowerCase().includes(search.toLowerCase()) ||
@@ -119,6 +140,15 @@ export default function DemoOutboxPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleSimulateDigests}
+              disabled={isSimulating}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3.5 py-2 text-xs font-semibold text-indigo-700 shadow-xs transition-colors hover:bg-indigo-100 dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-300"
+            >
+              <Send className={`h-3.5 w-3.5 ${isSimulating ? "animate-pulse" : ""}`} />
+              <span>{isSimulating ? "Simulating..." : "Simulate Daily Digest"}</span>
+            </button>
             <button
               type="button"
               onClick={loadEmails}
@@ -159,6 +189,7 @@ export default function DemoOutboxPage() {
               { label: "Verification", value: "VERIFY_EMAIL" },
               { label: "Password Reset", value: "PASSWORD_RESET" },
               { label: "Invites", value: "INVITE" },
+              { label: "Digests", value: "DIGEST" },
             ].map((tab) => (
               <button
                 key={tab.value}
@@ -224,7 +255,9 @@ export default function DemoOutboxPage() {
                             ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
                             : item.kind === "PASSWORD_RESET"
                               ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
-                              : "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
+                              : item.kind === "DIGEST"
+                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                                : "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
                         }`}
                       >
                         {item.kind.replace("_", " ")}

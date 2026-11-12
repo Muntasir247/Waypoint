@@ -3,8 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Search, Bell, Plus, ChevronDown, Command, LogOut, LogIn, User } from "lucide-react";
+import { Search, Plus, ChevronDown, Command, LogOut, LogIn, User } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import {
   WorkspaceSwitcher,
   type WorkspaceItem,
@@ -99,14 +100,7 @@ export function Topbar() {
         <div className="bg-border mx-1 h-5 w-px" />
 
         {/* Notifications Bell */}
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground relative inline-flex h-9 w-9 items-center justify-center rounded-lg border p-2 shadow-xs transition-colors"
-        >
-          <Bell className="h-4 w-4" />
-          <span className="ring-card absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-600 ring-2" />
-        </button>
+        <NotificationBell />
 
         {/* Theme Toggle */}
         <ThemeToggle />

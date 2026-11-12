@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Layers,
   Sparkles,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getMyTasksAction } from "@/features/tasks/actions";
@@ -37,6 +38,7 @@ const mainNavItems: NavItem[] = [
   { label: "Workload View", href: "/workload", icon: Users2 },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { label: "Reports", href: "/reports", icon: BarChart3 },
+  { label: "Audit Log", href: "/audit-log", icon: ShieldAlert },
 ];
 
 const secondaryNavItems: NavItem[] = [

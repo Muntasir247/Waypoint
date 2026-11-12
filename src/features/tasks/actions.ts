@@ -27,6 +27,7 @@ import {
   type TaskDependencyInput,
 } from "./schemas";
 import { TaskStatus } from "@prisma/client";
+import { recordTaskCompletionScore, recordTaskReopeningReversal } from "@/features/scoring/actions";
 
 /**
  * Get all tasks for the active workspace, with optional filtering.
@@ -530,6 +531,12 @@ export async function updateTaskStatusAction(input: UpdateTaskStatusInput) {
     },
   });
 
+  if (nextStatus === TaskStatus.DONE) {
+    await recordTaskCompletionScore(task.id);
+  } else if (currentStatus === TaskStatus.DONE) {
+    await recordTaskReopeningReversal(task.id);
+  }
+
   revalidatePath(`/projects/${task.projectId}`);
   revalidatePath("/board");
   revalidatePath("/my-tasks");
@@ -623,6 +630,12 @@ export async function moveTaskAction(input: MoveTaskInput) {
         : {}),
     },
   });
+
+  if (nextStatus === TaskStatus.DONE) {
+    await recordTaskCompletionScore(task.id);
+  } else if (currentStatus === TaskStatus.DONE) {
+    await recordTaskReopeningReversal(task.id);
+  }
 
   revalidatePath(`/projects/${task.projectId}`);
   revalidatePath("/board");

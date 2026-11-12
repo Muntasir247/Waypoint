@@ -12,6 +12,7 @@ import {
   type ReassignMemberTasksInput,
 } from "./schemas";
 import { STATUS_CONFIG } from "@/components/views/types";
+import { recordTaskCompletionScore, recordTaskReopeningReversal } from "@/features/scoring/actions";
 
 export interface MemberWorkload {
   membershipId: string;
@@ -332,6 +333,16 @@ export async function bulkUpdateTasksAction(input: BulkUpdateTasksInput): Promis
           completedAt,
         },
       });
+
+      if (parsed.data.status === TaskStatus.DONE) {
+        for (const tid of validTaskIds) {
+          await recordTaskCompletionScore(tid);
+        }
+      } else {
+        for (const tid of validTaskIds) {
+          await recordTaskReopeningReversal(tid);
+        }
+      }
       break;
     }
 

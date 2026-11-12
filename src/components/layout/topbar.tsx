@@ -10,10 +10,12 @@ import {
   type WorkspaceItem,
 } from "@/features/workspaces/components/workspace-switcher";
 import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
+import { CreateTaskModal } from "@/components/tasks/create-task-modal";
 
 export function Topbar() {
   const { data: session } = useSession();
   const [profileOpen, setProfileOpen] = React.useState(false);
+  const [isCreateTaskOpen, setIsCreateTaskOpen] = React.useState(false);
   const [workspaces, setWorkspaces] = React.useState<WorkspaceItem[]>([]);
   const [currentWorkspaceName, setCurrentWorkspaceName] =
     React.useState<string>("Acme Engineering");
@@ -87,6 +89,7 @@ export function Topbar() {
       <div className="flex items-center gap-2.5">
         <button
           type="button"
+          onClick={() => setIsCreateTaskOpen(true)}
           className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-indigo-700 active:scale-98"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -179,6 +182,8 @@ export function Topbar() {
           )}
         </div>
       </div>
+
+      <CreateTaskModal isOpen={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
     </header>
   );
 }

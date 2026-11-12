@@ -58,6 +58,28 @@ export const updateTaskStatusSchema = z
 
 export type UpdateTaskStatusInput = z.infer<typeof updateTaskStatusSchema>;
 
+export const moveTaskSchema = z
+  .object({
+    taskId: z.string().min(1),
+    newStatus: z.nativeEnum(TaskStatus),
+    newPosition: z.number().default(0),
+    blockedReason: z.string().max(500).optional().nullable(),
+  })
+  .refine(
+    (data) => {
+      if (data.newStatus === TaskStatus.BLOCKED) {
+        return Boolean(data.blockedReason && data.blockedReason.trim().length > 0);
+      }
+      return true;
+    },
+    {
+      message: "A short reason is required when moving a task to BLOCKED",
+      path: ["blockedReason"],
+    },
+  );
+
+export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
+
 export const createChecklistItemSchema = z.object({
   taskId: z.string().min(1),
   text: z.string().min(1, "Checklist item text is required").max(300),

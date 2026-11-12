@@ -8,17 +8,24 @@ import {
   Calendar,
   Rocket,
   Flag,
-  CheckSquare,
   BarChart3,
   Trash2,
   ArrowLeft,
   ChevronRight,
+  Kanban,
+  List,
+  Clock,
 } from "lucide-react";
 import { getProjectDetailAction, deleteProjectAction } from "@/features/projects/actions";
 import { CreateTaskModal } from "@/components/tasks/create-task-modal";
 import { CreateSprintModal } from "@/components/projects/create-sprint-modal";
 import { CreateMilestoneModal } from "@/components/projects/create-milestone-modal";
 import { TaskDetailDrawer } from "@/components/tasks/task-detail-drawer";
+import { KanbanView } from "@/components/views/kanban-view";
+import { ListView } from "@/components/views/list-view";
+import { CalendarView } from "@/components/views/calendar-view";
+import { TimelineView } from "@/components/views/timeline-view";
+import { TaskItem } from "@/components/views/types";
 
 export type ProjectDetailData = NonNullable<
   Awaited<ReturnType<typeof getProjectDetailAction>>["project"]
@@ -33,7 +40,7 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
   const router = useRouter();
   const [project, setProject] = React.useState<ProjectDetailData | null>(initialProject);
   const [activeTab, setActiveTab] = React.useState<
-    "overview" | "backlog" | "sprints" | "milestones"
+    "overview" | "kanban" | "list" | "calendar" | "timeline" | "sprints" | "milestones"
   >("overview");
 
   // Modals & Drawer
@@ -41,6 +48,50 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
   const [isCreateSprintOpen, setIsCreateSprintOpen] = React.useState(false);
   const [isCreateMilestoneOpen, setIsCreateMilestoneOpen] = React.useState(false);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
+
+  const formattedTasks: TaskItem[] = React.useMemo(() => {
+    if (!project) return [];
+    return project.tasks.map((t) => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      status: t.status,
+      priority: t.priority,
+      estimatePoints: t.estimatePoints,
+      dueDate: t.dueDate
+        ? typeof t.dueDate === "string"
+          ? t.dueDate
+          : (t.dueDate as Date).toISOString()
+        : null,
+      position: t.position,
+      blockedReason: t.blockedReason,
+      completedAt: t.completedAt
+        ? typeof t.completedAt === "string"
+          ? t.completedAt
+          : (t.completedAt as Date).toISOString()
+        : null,
+      createdAt:
+        typeof t.createdAt === "string" ? t.createdAt : (t.createdAt as Date).toISOString(),
+      project: { id: project.id, name: project.name },
+      sprint: t.sprintId ? project.sprints.find((s) => s.id === t.sprintId) || null : null,
+      milestone: t.milestoneId
+        ? project.milestones.find((m) => m.id === t.milestoneId) || null
+        : null,
+      assignee: t.assignee
+        ? {
+            id: t.assignee.id,
+            role: t.assignee.role,
+            name: t.assignee.user?.name || "Member",
+            email: t.assignee.user?.email || "",
+            image: t.assignee.user?.image || null,
+          }
+        : null,
+      labels: t.labels.map((l) => l.label),
+      checklistTotal: t.checklist.length,
+      checklistDone: t.checklist.filter((c) => c.done).length,
+      dependenciesCount: t.dependencies.length,
+    }));
+  }, [project]);
 
   const refreshProject = React.useCallback(() => {
     if (!projectId) return;
@@ -147,11 +198,14 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-border flex items-center gap-2 border-b">
+      <div className="border-border flex items-center gap-2 overflow-x-auto border-b">
         {(
           [
             { id: "overview", label: "Overview", icon: BarChart3 },
-            { id: "backlog", label: `Backlog (${project.tasks.length})`, icon: CheckSquare },
+            { id: "kanban", label: `Board (${project.tasks.length})`, icon: Kanban },
+            { id: "list", label: "List", icon: List },
+            { id: "calendar", label: "Calendar", icon: Calendar },
+            { id: "timeline", label: "Timeline", icon: Clock },
             { id: "sprints", label: `Sprints (${project.sprints.length})`, icon: Rocket },
             { id: "milestones", label: `Milestones (${project.milestones.length})`, icon: Flag },
           ] as const
@@ -162,7 +216,7 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-colors ${
+              className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold whitespace-nowrap transition-colors ${
                 isActive
                   ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
                   : "text-muted-foreground hover:text-foreground border-transparent"
@@ -332,12 +386,12 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
         </div>
       )}
 
-      {/* Tab Content: BACKLOG */}
-      {activeTab === "backlog" && (
+      {/* Tab Content: KANBAN BOARD */}
+      {activeTab === "kanban" && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-              Prioritized Tasks ({project.tasks.length})
+              Kanban Board ({formattedTasks.length} tasks)
             </span>
             <button
               type="button"
@@ -348,98 +402,54 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
               <span>Add Task</span>
             </button>
           </div>
+          <KanbanView
+            tasks={formattedTasks}
+            onSelectTask={setSelectedTaskId}
+            onAddTask={() => setIsCreateTaskOpen(true)}
+            onRefresh={refreshProject}
+          />
+        </div>
+      )}
 
-          {project.tasks.length === 0 ? (
-            <div className="border-border bg-card rounded-2xl border border-dashed p-10 text-center">
-              <CheckSquare className="text-muted-foreground mx-auto h-8 w-8 opacity-50" />
-              <h3 className="text-foreground mt-2 text-xs font-semibold">No tasks in backlog</h3>
-              <p className="text-muted-foreground mt-0.5 text-[11px]">
-                Break your project down into assignable tasks with estimates and dependencies.
-              </p>
-              <button
-                onClick={() => setIsCreateTaskOpen(true)}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Create Task</span>
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {project.tasks.map((task) => (
-                <div
-                  key={task.id}
-                  onClick={() => setSelectedTaskId(task.id)}
-                  className="border-border bg-card hover:bg-muted/30 flex cursor-pointer items-center justify-between rounded-xl border p-3.5 shadow-xs transition-all hover:border-indigo-400 dark:hover:border-indigo-600"
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        task.status === "DONE"
-                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                          : task.status === "BLOCKED"
-                            ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
-                            : task.status === "IN_PROGRESS"
-                              ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
-                              : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {task.status.replace("_", " ")}
-                    </span>
+      {/* Tab Content: LIST VIEW */}
+      {activeTab === "list" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              Tasks List ({formattedTasks.length})
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsCreateTaskOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add Task</span>
+            </button>
+          </div>
+          <ListView
+            tasks={formattedTasks}
+            onSelectTask={setSelectedTaskId}
+            onRefresh={refreshProject}
+          />
+        </div>
+      )}
 
-                    <div>
-                      <span className="text-foreground text-xs font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                        {task.title}
-                      </span>
-                      {task.status === "BLOCKED" && task.blockedReason && (
-                        <p className="mt-0.5 text-[11px] text-rose-600 dark:text-rose-400">
-                          Blocker: {task.blockedReason}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+      {/* Tab Content: CALENDAR */}
+      {activeTab === "calendar" && (
+        <div className="space-y-4">
+          <CalendarView
+            tasks={formattedTasks}
+            onSelectTask={setSelectedTaskId}
+            onAddTask={() => setIsCreateTaskOpen(true)}
+          />
+        </div>
+      )}
 
-                  <div className="flex items-center gap-4 text-xs">
-                    {/* Priority chip */}
-                    <span
-                      className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ${
-                        task.priority === "CRITICAL"
-                          ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
-                          : task.priority === "HIGH"
-                            ? "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                            : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {task.priority}
-                    </span>
-
-                    {/* Estimate Points */}
-                    <span className="text-muted-foreground font-mono text-xs font-semibold">
-                      {task.estimatePoints} pts
-                    </span>
-
-                    {/* Checklist count */}
-                    {task.checklist && task.checklist.length > 0 && (
-                      <span className="text-muted-foreground text-[11px]">
-                        {task.checklist.filter((c) => c.done).length}/{task.checklist.length}{" "}
-                        subtasks
-                      </span>
-                    )}
-
-                    {/* Assignee */}
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                        {task.assignee?.user?.name?.[0] || "?"}
-                      </div>
-                      <span className="text-muted-foreground max-w-[100px] truncate">
-                        {task.assignee?.user?.name || "Unassigned"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Tab Content: TIMELINE */}
+      {activeTab === "timeline" && (
+        <div className="space-y-4">
+          <TimelineView tasks={formattedTasks} onSelectTask={setSelectedTaskId} />
         </div>
       )}
 

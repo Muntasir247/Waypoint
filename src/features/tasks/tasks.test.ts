@@ -8,6 +8,8 @@ import {
   toggleChecklistItemAction,
   addCommentAction,
   logTimeAction,
+  moveTaskAction,
+  getMyTasksAction,
 } from "./actions";
 import { AuthorizationError } from "@/lib/permissions";
 import { TaskStatus, Priority } from "@prisma/client";
@@ -180,6 +182,34 @@ vi.mock("@/lib/db", () => ({
         const updated = { ...existing, ...data };
         mockDbState.tasks.set(where.id, updated);
         return updated;
+      }),
+      findMany: vi.fn(async ({ where }: { where?: { assigneeId?: string } }) => {
+        let list = Array.from(mockDbState.tasks.values());
+        if (where?.assigneeId) {
+          list = list.filter((t) => t.assigneeId === where.assigneeId);
+        }
+        return list.map((t) => ({
+          ...t,
+          project: { id: t.projectId, name: "Test Project" },
+          sprint: null,
+          milestone: null,
+          assignee: t.assigneeId
+            ? {
+                id: t.assigneeId,
+                role: "DEVELOPER",
+                user: {
+                  id: "usr_dev_1",
+                  name: "Sarah Chen",
+                  email: "dev@waypoint.dev",
+                  image: null,
+                },
+              }
+            : null,
+          labels: [],
+          checklist: [],
+          dependencies: [],
+          _count: { comments: 0, attachments: 0, timeEntries: 0 },
+        }));
       }),
       delete: vi.fn(async ({ where }: { where: { id: string } }) => {
         mockDbState.tasks.delete(where.id);
@@ -507,5 +537,68 @@ describe("Phase 3: Core Tasks & RBAC", () => {
     });
     expect(timeRes.error).toBeNull();
     expect(timeRes.entry?.minutes).toBe(90);
+  });
+
+  it("supports moveTaskAction with position, status change, and blockedReason validation", async () => {
+    const taskRes = await createTaskAction({
+      projectId: "proj_1",
+      title: "Kanban Task Move",
+      assigneeId: "mem_dev_1",
+    });
+    const taskId = taskRes.task!.id;
+
+    // Moving to BLOCKED without reason should fail
+    const blockedFail = await moveTaskAction({
+      taskId,
+      newStatus: TaskStatus.BLOCKED,
+      newPosition: 1,
+      blockedReason: "",
+    });
+    expect(blockedFail.error).toContain("reason is required");
+
+    // Moving to BLOCKED with reason should succeed
+    const blockedOk = await moveTaskAction({
+      taskId,
+      newStatus: TaskStatus.BLOCKED,
+      newPosition: 1,
+      blockedReason: "Waiting on upstream auth token",
+    });
+    expect(blockedOk.error).toBeNull();
+    expect(blockedOk.task?.status).toBe(TaskStatus.BLOCKED);
+    expect(blockedOk.task?.position).toBe(1);
+    expect(blockedOk.task?.blockedReason).toBe("Waiting on upstream auth token");
+  });
+
+  it("returns My Tasks with personal metrics for the logged-in member", async () => {
+    // Admin creates tasks assigned to dev_1
+    await createTaskAction({
+      projectId: "proj_1",
+      title: "Dev Assigned Task 1",
+      assigneeId: "mem_dev_1",
+    });
+    await createTaskAction({
+      projectId: "proj_1",
+      title: "Dev Assigned Task 2",
+      assigneeId: "mem_dev_1",
+    });
+
+    // Switch to dev_1
+    currentMockUser = {
+      id: "usr_dev_1",
+      email: "dev@waypoint.dev",
+      name: "Sarah Chen",
+    };
+    currentMockMembership = {
+      id: "mem_dev_1",
+      role: "DEVELOPER",
+      userId: "usr_dev_1",
+      workspaceId: "ws_acme",
+    };
+
+    const myTasksRes = await getMyTasksAction();
+    expect(myTasksRes.error).toBeNull();
+    expect(myTasksRes.tasks.length).toBeGreaterThanOrEqual(2);
+    expect(myTasksRes.metrics).toBeDefined();
+    expect(myTasksRes.metrics?.totalAssigned).toBeGreaterThanOrEqual(2);
   });
 });

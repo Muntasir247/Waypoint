@@ -15,9 +15,11 @@ import {
   createAttachmentSchema,
   createTimeEntrySchema,
   taskDependencySchema,
+  moveTaskSchema,
   type CreateTaskInput,
   type UpdateTaskInput,
   type UpdateTaskStatusInput,
+  type MoveTaskInput,
   type CreateChecklistItemInput,
   type CreateCommentInput,
   type CreateAttachmentInput,
@@ -532,6 +534,199 @@ export async function updateTaskStatusAction(input: UpdateTaskStatusInput) {
   revalidatePath("/board");
   revalidatePath("/my-tasks");
   return { task: updated, error: null };
+}
+
+/**
+ * Move a task (Kanban drag-and-drop: updates status and/or position, validates RBAC, blocked reason, and dependencies).
+ */
+export async function moveTaskAction(input: MoveTaskInput) {
+  const { workspace, membership } = await getCurrentUserAndWorkspace();
+  if (!workspace || !membership) {
+    return { error: "Authentication required" };
+  }
+
+  const parsed = moveTaskSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || "Invalid move task payload" };
+  }
+
+  const task = await db.task.findUnique({
+    where: { id: parsed.data.taskId },
+    include: {
+      project: true,
+      dependencies: {
+        include: {
+          dependsOnTask: {
+            select: { id: true, title: true, status: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!task || task.project.workspaceId !== workspace.id) {
+    return { error: "Task not found" };
+  }
+
+  const nextStatus = parsed.data.newStatus;
+  const currentStatus = task.status;
+  const nextPosition = parsed.data.newPosition;
+
+  // If status changes, RBAC and prerequisites check
+  let completedAt = task.completedAt;
+  let blockedReason = task.blockedReason;
+  const statusChanged = nextStatus !== currentStatus;
+
+  if (statusChanged) {
+    // RBAC check: Developer can only update own assigned tasks
+    assertCan(membership, "update_status:task", {
+      type: "task",
+      task: { id: task.id, assigneeId: task.assigneeId, createdById: task.createdById },
+    });
+
+    // Check prerequisites if moving to IN_PROGRESS
+    if (nextStatus === TaskStatus.IN_PROGRESS) {
+      const prerequisites = task.dependencies.map((d) => d.dependsOnTask);
+      const check = checkPrerequisitesForInProgress(prerequisites);
+      if (!check.canStart) {
+        return { error: check.message || "Prerequisite tasks must be marked DONE first." };
+      }
+    }
+
+    if (nextStatus === TaskStatus.DONE) {
+      completedAt = new Date();
+    } else if (currentStatus === TaskStatus.DONE) {
+      completedAt = null;
+    }
+
+    blockedReason = nextStatus === TaskStatus.BLOCKED ? parsed.data.blockedReason || null : null;
+  }
+
+  const updated = await db.task.update({
+    where: { id: task.id },
+    data: {
+      status: nextStatus,
+      position: nextPosition,
+      blockedReason,
+      completedAt,
+      ...(statusChanged
+        ? {
+            activityLogs: {
+              create: {
+                actorId: membership.id,
+                action: "STATUS_CHANGED",
+                fromValue: currentStatus,
+                toValue: nextStatus,
+              },
+            },
+          }
+        : {}),
+    },
+  });
+
+  revalidatePath(`/projects/${task.projectId}`);
+  revalidatePath("/board");
+  revalidatePath("/my-tasks");
+  return { task: updated, error: null };
+}
+
+/**
+ * Get tasks assigned to the current user with personal summary metrics (Developer Home / My Tasks).
+ */
+export async function getMyTasksAction() {
+  const { workspace, membership, user } = await getCurrentUserAndWorkspace();
+  if (!workspace || !membership || !user) {
+    return { error: "Authentication and active workspace required", tasks: [], metrics: null };
+  }
+
+  assertCan(membership, "view:tasks");
+
+  const tasks = await db.task.findMany({
+    where: {
+      project: { workspaceId: workspace.id },
+      assigneeId: membership.id,
+    },
+    include: {
+      project: { select: { id: true, name: true } },
+      sprint: { select: { id: true, name: true, status: true } },
+      milestone: { select: { id: true, name: true, dueDate: true } },
+      assignee: {
+        include: {
+          user: { select: { id: true, name: true, email: true, image: true } },
+        },
+      },
+      labels: {
+        include: { label: true },
+      },
+      checklist: {
+        select: { id: true, done: true },
+      },
+      dependencies: {
+        select: { dependsOnTaskId: true },
+      },
+      _count: {
+        select: { comments: true, attachments: true, timeEntries: true },
+      },
+    },
+    orderBy: [{ status: "asc" }, { dueDate: "asc" }, { position: "asc" }],
+  });
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const formatted = tasks.map((t) => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    status: t.status,
+    priority: t.priority,
+    estimatePoints: t.estimatePoints,
+    dueDate: t.dueDate ? t.dueDate.toISOString() : null,
+    position: t.position,
+    blockedReason: t.blockedReason,
+    completedAt: t.completedAt ? t.completedAt.toISOString() : null,
+    createdAt: t.createdAt.toISOString(),
+    project: t.project,
+    sprint: t.sprint,
+    milestone: t.milestone
+      ? {
+          ...t.milestone,
+          dueDate: t.milestone.dueDate ? t.milestone.dueDate.toISOString() : null,
+        }
+      : null,
+    assignee: t.assignee
+      ? {
+          id: t.assignee.id,
+          role: t.assignee.role,
+          name: t.assignee.user.name || "Member",
+          email: t.assignee.user.email,
+          image: t.assignee.user.image,
+        }
+      : null,
+    labels: t.labels.map((l) => l.label),
+    checklistTotal: t.checklist.length,
+    checklistDone: t.checklist.filter((c) => c.done).length,
+    dependenciesCount: t.dependencies.length,
+    commentsCount: t._count.comments,
+    attachmentsCount: t._count.attachments,
+    timeEntriesCount: t._count.timeEntries,
+  }));
+
+  const metrics = {
+    totalAssigned: tasks.length,
+    inProgress: tasks.filter((t) => t.status === TaskStatus.IN_PROGRESS).length,
+    todo: tasks.filter((t) => t.status === TaskStatus.TODO).length,
+    inReview: tasks.filter((t) => t.status === TaskStatus.IN_REVIEW).length,
+    blocked: tasks.filter((t) => t.status === TaskStatus.BLOCKED).length,
+    done: tasks.filter((t) => t.status === TaskStatus.DONE).length,
+    overdue: tasks.filter((t) => t.dueDate && t.dueDate < now && t.status !== TaskStatus.DONE)
+      .length,
+    completedThisMonth: tasks.filter(
+      (t) => t.status === TaskStatus.DONE && t.completedAt && t.completedAt >= startOfMonth,
+    ).length,
+  };
+
+  return { tasks: formatted, metrics, error: null };
 }
 
 /**

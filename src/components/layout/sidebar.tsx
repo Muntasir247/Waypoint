@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getMyTasksAction } from "@/features/tasks/actions";
 
 interface NavItem {
   label: string;
@@ -31,7 +32,7 @@ const mainNavItems: NavItem[] = [
   { label: "Overview", href: "/", icon: Layers },
   { label: "Projects", href: "/projects", icon: FolderGit2 },
   { label: "Team & Members", href: "/team", icon: Users2 },
-  { label: "My Tasks", href: "/my-tasks", icon: CheckSquare, badge: 8, badgeVariant: "primary" },
+  { label: "My Tasks", href: "/my-tasks", icon: CheckSquare, badgeVariant: "primary" },
   { label: "Kanban Board", href: "/board", icon: Kanban },
   { label: "Workload View", href: "/workload", icon: Users2 },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
@@ -52,6 +53,18 @@ const secondaryNavItems: NavItem[] = [
 export function Sidebar() {
   const pathname = usePathname();
   const [projectsOpen, setProjectsOpen] = React.useState(true);
+  const [myTasksCount, setMyTasksCount] = React.useState<number | undefined>(undefined);
+
+  React.useEffect(() => {
+    getMyTasksAction()
+      .then((res) => {
+        if (res.metrics) {
+          const activeCount = res.metrics.totalAssigned - res.metrics.done;
+          setMyTasksCount(activeCount > 0 ? activeCount : undefined);
+        }
+      })
+      .catch(() => {});
+  }, [pathname]);
 
   return (
     <aside className="border-border bg-card text-card-foreground flex h-screen w-64 flex-col border-r">
@@ -77,6 +90,7 @@ export function Sidebar() {
             {mainNavItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
+              const displayBadge = item.href === "/my-tasks" ? myTasksCount : item.badge;
               return (
                 <Link
                   key={item.href}
@@ -97,7 +111,7 @@ export function Sidebar() {
                     />
                     <span>{item.label}</span>
                   </div>
-                  {item.badge !== undefined && (
+                  {displayBadge !== undefined && (
                     <span
                       className={cn(
                         "rounded-full px-2 py-0.5 text-[11px] font-semibold",
@@ -109,7 +123,7 @@ export function Sidebar() {
                           "bg-muted text-muted-foreground",
                       )}
                     >
-                      {item.badge}
+                      {displayBadge}
                     </span>
                   )}
                 </Link>

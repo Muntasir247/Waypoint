@@ -18,6 +18,7 @@ import {
   Keyboard,
   X,
   Layers,
+  Settings,
 } from "lucide-react";
 
 interface CommandItem {
@@ -117,6 +118,15 @@ export function CommandPalette({ onOpenCreateTask }: CommandPaletteProps) {
         icon: Mail,
         shortcut: "G D",
         onSelect: () => router.push("/demo-outbox"),
+      },
+      {
+        id: "nav-settings",
+        title: "Workspace Settings",
+        subtitle: "Governance, scoring config & safeguards",
+        category: "Navigation",
+        icon: Settings,
+        shortcut: "G S",
+        onSelect: () => router.push("/settings"),
       },
 
       // Actions
@@ -250,6 +260,9 @@ export function CommandPalette({ onOpenCreateTask }: CommandPaletteProps) {
         } else if (target === "d") {
           e.preventDefault();
           router.push("/demo-outbox");
+        } else if (target === "s") {
+          e.preventDefault();
+          router.push("/settings");
         }
       }
     }
@@ -470,6 +483,12 @@ export function CommandPalette({ onOpenCreateTask }: CommandPaletteProps) {
                 <span>Go to Demo Outbox</span>
                 <kbd className="border-border bg-muted rounded border px-2 py-0.5 font-mono text-[11px]">
                   G then D
+                </kbd>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Go to Workspace Settings</span>
+                <kbd className="border-border bg-muted rounded border px-2 py-0.5 font-mono text-[11px]">
+                  G then S
                 </kbd>
               </div>
             </div>

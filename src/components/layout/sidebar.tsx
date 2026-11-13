@@ -46,8 +46,6 @@ const secondaryNavItems: NavItem[] = [
     label: "Demo Outbox",
     href: "/demo-outbox",
     icon: Mail,
-    badge: "Mocked",
-    badgeVariant: "warning",
   },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -226,18 +224,18 @@ export function Sidebar() {
           <div className="flex items-center justify-between pb-1.5">
             <span className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
               <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-              Sprint 24 Cycle
+              Active Sprint
             </span>
             <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
               On Track
             </span>
           </div>
           <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-            <div className="h-full w-3/4 rounded-full bg-indigo-600" />
+            <div className="h-full w-3/4 rounded-full bg-indigo-600 dark:bg-indigo-500" />
           </div>
           <div className="text-muted-foreground mt-1.5 flex items-center justify-between text-[11px]">
-            <span>74% done</span>
-            <span>4 days left</span>
+            <span>Velocity</span>
+            <span>74% complete</span>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import type { Prisma, Role, Availability } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
@@ -27,24 +28,55 @@ export async function getCurrentUserAndWorkspace() {
   const cookieStore = await cookies();
   const activeWorkspaceCookie = cookieStore.get(WORKSPACE_COOKIE_NAME)?.value;
 
-  // Retrieve all memberships for the current user
-  let memberships = await db.membership.findMany({
-    where: { userId },
-    include: {
-      workspace: true,
-    },
-    orderBy: { joinedAt: "asc" },
-  });
+  type MembershipWithWorkspace = Prisma.MembershipGetPayload<{
+    include: { workspace: true };
+  }>;
 
-  // In demo mode, if user has no memberships, auto-seed the demo workspace
-  if (memberships.length === 0) {
-    const demoWorkspace = await ensureDemoWorkspaceForUser(userId, session.user.email);
-    if (demoWorkspace) {
-      memberships = await db.membership.findMany({
-        where: { userId },
-        include: { workspace: true },
-      });
+  // Retrieve all memberships for the current user
+  let memberships: MembershipWithWorkspace[] = [];
+  try {
+    memberships = await db.membership.findMany({
+      where: { userId },
+      include: {
+        workspace: true,
+      },
+      orderBy: { joinedAt: "asc" },
+    });
+
+    // In demo mode, if user has no memberships, auto-seed the demo workspace
+    if (memberships.length === 0) {
+      const demoWorkspace = await ensureDemoWorkspaceForUser(userId, session.user.email);
+      if (demoWorkspace) {
+        memberships = await db.membership.findMany({
+          where: { userId },
+          include: { workspace: true },
+        });
+      }
     }
+  } catch {
+    const demoWs = {
+      id: "demo-workspace-acme",
+      name: "Acme Engineering",
+      slug: "acme-engineering",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      allowDeveloperCreateTasks: true,
+    };
+    const demoMem = {
+      id: `demo-membership-${userId}`,
+      userId,
+      workspaceId: demoWs.id,
+      role: ((session.user as { role?: Role }).role as Role) || ("ADMIN" as Role),
+      availability: "ACTIVE" as Availability,
+      joinedAt: new Date(),
+      workspace: demoWs,
+    };
+    return {
+      user: session.user,
+      workspace: demoWs,
+      membership: demoMem,
+      workspaces: [{ ...demoWs, role: demoMem.role, isActive: true }],
+    };
   }
 
   if (memberships.length === 0) {

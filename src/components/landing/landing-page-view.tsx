@@ -65,9 +65,6 @@ export function LandingPageView() {
             </div>
             <div>
               <span className="text-foreground text-lg font-black tracking-tight">Waypoint</span>
-              <span className="text-muted-foreground ml-2 hidden font-mono text-xs sm:inline">
-                v0.1 MVP
-              </span>
             </div>
           </div>
 
@@ -124,7 +121,7 @@ export function LandingPageView() {
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/80 bg-indigo-50/80 px-3 py-1 text-xs font-semibold text-indigo-800 shadow-2xs backdrop-blur-xs dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-300">
             <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>Precision Task Assignment & Recognition</span>
+            <span>Capacity-Aware Task Allocation</span>
           </div>
 
           <h1 className="text-foreground mx-auto mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl sm:leading-tight">
@@ -487,28 +484,28 @@ export function LandingPageView() {
 
                 <div className="border-border bg-muted/40 grid grid-cols-2 gap-3 rounded-2xl border p-4 text-xs font-semibold">
                   <div className="border-border bg-card rounded-xl border p-3">
-                    <Kanban className="mb-2 h-4 w-4 text-indigo-600" />
-                    <span>Kanban Dnd</span>
+                    <Kanban className="mb-2 h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                    <span>Kanban Board</span>
                     <p className="text-muted-foreground mt-1 text-[10px] font-normal">
                       Drag status transitions with blocked reasons
                     </p>
                   </div>
                   <div className="border-border bg-card rounded-xl border p-3">
-                    <Clock className="mb-2 h-4 w-4 text-emerald-600" />
+                    <Clock className="mb-2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <span>Timeline & Gantt</span>
                     <p className="text-muted-foreground mt-1 text-[10px] font-normal">
                       Visualize milestones and critical paths
                     </p>
                   </div>
                   <div className="border-border bg-card rounded-xl border p-3">
-                    <Layers className="mb-2 h-4 w-4 text-purple-600" />
+                    <Layers className="mb-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
                     <span>Unified Filters</span>
                     <p className="text-muted-foreground mt-1 text-[10px] font-normal">
                       Save search queries across your team
                     </p>
                   </div>
                   <div className="border-border bg-card rounded-xl border p-3">
-                    <Users2 className="mb-2 h-4 w-4 text-sky-600" />
+                    <Users2 className="mb-2 h-4 w-4 text-sky-600 dark:text-sky-400" />
                     <span>Workload Balancer</span>
                     <p className="text-muted-foreground mt-1 text-[10px] font-normal">
                       Prevent developer burnout automatically
@@ -536,12 +533,16 @@ export function LandingPageView() {
 
                 <div className="border-border bg-muted/40 space-y-2 rounded-2xl border p-4 text-xs">
                   <div className="border-border bg-card flex justify-between rounded-xl border p-3">
-                    <span className="font-semibold">Sprint 42 Burndown</span>
-                    <span className="font-mono font-bold text-emerald-600">On Track</span>
+                    <span className="font-semibold">Sprint Burndown</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                      On Track
+                    </span>
                   </div>
                   <div className="border-border bg-card flex justify-between rounded-xl border p-3">
                     <span className="font-semibold">Bug vs Feature Ratio</span>
-                    <span className="font-mono font-bold text-indigo-600">1 : 4.5</span>
+                    <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                      1 : 4.5
+                    </span>
                   </div>
                   <div className="border-border bg-card flex justify-between rounded-xl border p-3">
                     <span className="font-semibold">Audit Trail Events</span>
@@ -560,7 +561,7 @@ export function LandingPageView() {
           <div className="flex items-center gap-2">
             <Compass className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             <span className="text-foreground font-bold">Waypoint Engineering</span>
-            <span>— Precision Task Assignment & Recognition</span>
+            <span>— Modern Engineering Task Management</span>
           </div>
 
           <div className="flex items-center gap-6">

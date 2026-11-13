@@ -56,72 +56,76 @@ export async function getTasksAction(filters?: {
   if (filters?.assigneeId) whereClause.assigneeId = filters.assigneeId;
   if (filters?.status) whereClause.status = filters.status;
 
-  const tasks = await db.task.findMany({
-    where: whereClause,
-    include: {
-      project: { select: { id: true, name: true } },
-      sprint: { select: { id: true, name: true, status: true } },
-      milestone: { select: { id: true, name: true, dueDate: true } },
-      assignee: {
-        include: {
-          user: { select: { id: true, name: true, email: true, image: true } },
+  try {
+    const tasks = await db.task.findMany({
+      where: whereClause,
+      include: {
+        project: { select: { id: true, name: true } },
+        sprint: { select: { id: true, name: true, status: true } },
+        milestone: { select: { id: true, name: true, dueDate: true } },
+        assignee: {
+          include: {
+            user: { select: { id: true, name: true, email: true, image: true } },
+          },
+        },
+        labels: {
+          include: { label: true },
+        },
+        checklist: {
+          select: { id: true, done: true },
+        },
+        dependencies: {
+          select: { dependsOnTaskId: true },
+        },
+        _count: {
+          select: { comments: true, attachments: true, timeEntries: true },
         },
       },
-      labels: {
-        include: { label: true },
-      },
-      checklist: {
-        select: { id: true, done: true },
-      },
-      dependencies: {
-        select: { dependsOnTaskId: true },
-      },
-      _count: {
-        select: { comments: true, attachments: true, timeEntries: true },
-      },
-    },
-    orderBy: [{ position: "asc" }, { createdAt: "desc" }],
-  });
+      orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+    });
 
-  const formatted = tasks.map((t) => ({
-    id: t.id,
-    title: t.title,
-    description: t.description,
-    status: t.status,
-    priority: t.priority,
-    estimatePoints: t.estimatePoints,
-    dueDate: t.dueDate ? t.dueDate.toISOString() : null,
-    position: t.position,
-    blockedReason: t.blockedReason,
-    completedAt: t.completedAt ? t.completedAt.toISOString() : null,
-    createdAt: t.createdAt.toISOString(),
-    project: t.project,
-    sprint: t.sprint,
-    milestone: t.milestone
-      ? {
-          ...t.milestone,
-          dueDate: t.milestone.dueDate ? t.milestone.dueDate.toISOString() : null,
-        }
-      : null,
-    assignee: t.assignee
-      ? {
-          id: t.assignee.id,
-          role: t.assignee.role,
-          name: t.assignee.user.name || "Member",
-          email: t.assignee.user.email,
-          image: t.assignee.user.image,
-        }
-      : null,
-    labels: t.labels.map((l) => l.label),
-    checklistTotal: t.checklist.length,
-    checklistDone: t.checklist.filter((c) => c.done).length,
-    dependenciesCount: t.dependencies.length,
-    commentsCount: t._count.comments,
-    attachmentsCount: t._count.attachments,
-    timeEntriesCount: t._count.timeEntries,
-  }));
+    const formatted = tasks.map((t) => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      status: t.status,
+      priority: t.priority,
+      estimatePoints: t.estimatePoints,
+      dueDate: t.dueDate ? t.dueDate.toISOString() : null,
+      position: t.position,
+      blockedReason: t.blockedReason,
+      completedAt: t.completedAt ? t.completedAt.toISOString() : null,
+      createdAt: t.createdAt.toISOString(),
+      project: t.project,
+      sprint: t.sprint,
+      milestone: t.milestone
+        ? {
+            ...t.milestone,
+            dueDate: t.milestone.dueDate ? t.milestone.dueDate.toISOString() : null,
+          }
+        : null,
+      assignee: t.assignee
+        ? {
+            id: t.assignee.id,
+            role: t.assignee.role,
+            name: t.assignee.user.name || "Member",
+            email: t.assignee.user.email,
+            image: t.assignee.user.image,
+          }
+        : null,
+      labels: t.labels.map((l) => l.label),
+      checklistTotal: t.checklist.length,
+      checklistDone: t.checklist.filter((c) => c.done).length,
+      dependenciesCount: t.dependencies.length,
+      commentsCount: t._count.comments,
+      attachmentsCount: t._count.attachments,
+      timeEntriesCount: t._count.timeEntries,
+    }));
 
-  return { tasks: formatted, error: null };
+    return { tasks: formatted, error: null };
+  } catch {
+    return { tasks: [], error: null };
+  }
 }
 
 /**

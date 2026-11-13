@@ -263,7 +263,7 @@ export function ListView({
                     <span className="text-foreground text-xs font-bold tracking-tight">
                       {group.groupTitle}
                     </span>
-                    <span className="bg-muted text-muted-foreground py-0.2 rounded-full px-2 text-[10px] font-semibold">
+                    <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[10px] font-semibold">
                       {group.items.length}
                     </span>
                   </div>
@@ -327,7 +327,7 @@ export function ListView({
                                 {task.project.name}
                               </span>
                               {task.blockedReason && task.status === TaskStatus.BLOCKED && (
-                                <span className="py-0.2 inline-flex items-center gap-1 rounded-md bg-rose-100 px-1.5 text-[9px] font-bold text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-rose-100 px-1.5 py-0.5 text-[9px] font-bold text-rose-800 dark:bg-rose-950 dark:text-rose-300">
                                   Blocked
                                 </span>
                               )}

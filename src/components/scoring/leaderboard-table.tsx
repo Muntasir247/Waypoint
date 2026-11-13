@@ -109,7 +109,7 @@ export function LeaderboardTable({ members, onSelectMember }: LeaderboardTablePr
                         <div>
                           <div className="flex items-center gap-1.5">
                             <span className="text-foreground font-bold">{member.name}</span>
-                            <span className="bg-muted text-muted-foreground py-0.2 rounded-md px-1.5 text-[9px] font-semibold">
+                            <span className="bg-muted text-muted-foreground rounded-md px-1.5 py-0.5 text-[9px] font-semibold">
                               {member.role}
                             </span>
                           </div>

@@ -139,10 +139,10 @@ function LoginForm() {
             className="border-border bg-card flex flex-col items-start rounded-xl border p-2.5 text-left transition-all hover:border-indigo-400 hover:shadow-xs active:scale-98"
           >
             <div className="flex w-full items-center justify-between">
-              <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+              <span className="text-[10px] font-bold tracking-wider text-slate-600 uppercase dark:text-slate-400">
                 Viewer
               </span>
-              <Eye className="h-3.5 w-3.5 text-slate-400" />
+              <Eye className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
             </div>
             <span className="text-foreground mt-1 text-xs font-semibold">David Kim</span>
             <span className="text-muted-foreground text-[10px]">Stakeholder</span>

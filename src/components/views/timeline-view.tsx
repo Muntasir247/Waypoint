@@ -178,7 +178,7 @@ export function TimelineView({ tasks, onSelectTask }: TimelineViewProps) {
                       : task.status === "IN_PROGRESS"
                         ? "bg-sky-500 text-white"
                         : task.status === "IN_REVIEW"
-                          ? "bg-amber-500 text-white"
+                          ? "bg-amber-500 text-amber-950 font-semibold"
                           : task.status === "BLOCKED"
                             ? "bg-rose-500 text-white"
                             : "bg-slate-400 text-white";

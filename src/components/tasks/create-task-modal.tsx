@@ -434,7 +434,7 @@ export function CreateTaskModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe technical context, acceptance criteria, or repro steps..."
-              className="border-border bg-background text-foreground focus:ring-ring mt-1 w-full rounded-xl border px-3 py-2 font-mono text-sm text-xs outline-none focus:ring-2"
+              className="border-border bg-background text-foreground focus:ring-ring mt-1 w-full rounded-xl border px-3 py-2 font-mono text-xs outline-none focus:ring-2"
             />
           </div>
 

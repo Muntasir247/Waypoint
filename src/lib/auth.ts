@@ -27,6 +27,7 @@ const DEMO_ACCOUNTS: Record<string, { name: string; role: string }> = {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   secret: env.AUTH_SECRET,
   session: {
     strategy: "jwt",
@@ -62,27 +63,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Check demo accounts bypass when in Demo Mode
         if (env.NEXT_PUBLIC_DEMO_MODE && DEMO_ACCOUNTS[email]) {
           const demoInfo = DEMO_ACCOUNTS[email];
-          let user = await db.user.findUnique({ where: { email } });
+          try {
+            let user = await db.user.findUnique({ where: { email } });
 
-          if (!user) {
-            const passwordHash = await hashPassword("demo1234");
-            user = await db.user.create({
-              data: {
-                email,
-                name: demoInfo.name,
-                passwordHash,
-                emailVerified: new Date(),
-              },
-            });
+            if (!user) {
+              const passwordHash = await hashPassword("demo1234");
+              user = await db.user.create({
+                data: {
+                  email,
+                  name: demoInfo.name,
+                  passwordHash,
+                  emailVerified: new Date(),
+                },
+              });
+            }
+
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              image: user.image,
+              role: demoInfo.role,
+            };
+          } catch {
+            // Fallback for offline demo authentication
+            return {
+              id: `demo-${email.split("@")[0]}`,
+              email,
+              name: demoInfo.name,
+              image: null,
+              role: demoInfo.role,
+            };
           }
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.image,
-            role: demoInfo.role,
-          };
         }
 
         // Standard user authentication

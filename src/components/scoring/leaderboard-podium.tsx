@@ -98,7 +98,7 @@ export function LeaderboardPodium({ topMembers, onSelectMember }: LeaderboardPod
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-md">
             <Trophy className="h-5 w-5" />
           </div>
-          <span className="text-foreground mt-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-0.5 text-xs font-black tracking-wider text-amber-800 uppercase dark:bg-amber-950 dark:text-amber-300">
+          <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-0.5 text-xs font-black tracking-wider text-amber-800 uppercase dark:bg-amber-950 dark:text-amber-300">
             <Award className="h-3.5 w-3.5" />
             1st Place MVP
           </span>

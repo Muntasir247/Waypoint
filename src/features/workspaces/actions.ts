@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import type { Prisma, Role, Availability } from "@prisma/client";
+import type { Prisma, Role, Workspace } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
@@ -54,20 +54,21 @@ export async function getCurrentUserAndWorkspace() {
       }
     }
   } catch {
-    const demoWs = {
+    const demoWs: Workspace = {
       id: "demo-workspace-acme",
       name: "Acme Engineering",
       slug: "acme-engineering",
+      createdById: userId,
       createdAt: new Date(),
       updatedAt: new Date(),
       allowDeveloperCreateTasks: true,
     };
-    const demoMem = {
+    const demoMem: MembershipWithWorkspace = {
       id: `demo-membership-${userId}`,
       userId,
       workspaceId: demoWs.id,
-      role: ((session.user as { role?: Role }).role as Role) || ("ADMIN" as Role),
-      availability: "ACTIVE" as Availability,
+      role: ((session.user as { role?: Role }).role as Role) || "ADMIN",
+      availability: "ACTIVE",
       joinedAt: new Date(),
       workspace: demoWs,
     };
@@ -75,7 +76,15 @@ export async function getCurrentUserAndWorkspace() {
       user: session.user,
       workspace: demoWs,
       membership: demoMem,
-      workspaces: [{ ...demoWs, role: demoMem.role, isActive: true }],
+      workspaces: [
+        {
+          id: demoWs.id,
+          name: demoWs.name,
+          slug: demoWs.slug,
+          role: demoMem.role,
+          isActive: true,
+        },
+      ],
     };
   }
 

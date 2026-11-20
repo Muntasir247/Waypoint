@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { TaskStatus } from "@prisma/client";
 import { ensureSystemBadges, awardBadgeToMember } from "@/features/scoring/badges";
+import { validateCronRequest } from "@/lib/cron-auth";
 
 export const instant = false;
 
@@ -10,11 +11,9 @@ export const instant = false;
  * Protected by CRON_SECRET authorization header.
  */
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const unauthorized = validateCronRequest(req);
+  if (unauthorized) {
+    return unauthorized;
   }
 
   // Calculate previous month string (e.g. if run on Dec 1st, close Nov: "2026-11")

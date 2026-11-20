@@ -230,6 +230,35 @@ npm run build
 
 ---
 
+## 🔑 Google OAuth Setup
+
+To enable "Continue with Google" authentication for users:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and create or select your project.
+2. Navigate to **APIs & Services** > **OAuth consent screen**:
+   - Select **External** user type.
+   - Fill in App Name (`Waypoint`), User support email, and Developer contact information.
+   - Add scopes: `.../auth/userinfo.email` and `.../auth/userinfo.profile`.
+3. Navigate to **APIs & Services** > **Credentials**:
+   - Click **Create Credentials** > **OAuth client ID**.
+   - Select Application type: **Web application**.
+   - Set Name: `Waypoint Web Client`.
+   - Under **Authorized JavaScript origins**, add:
+     - `http://localhost:3000`
+     - `https://waypoint-jade-kappa.vercel.app`
+   - Under **Authorized redirect URIs**, add:
+     - `http://localhost:3000/api/auth/callback/google`
+     - `https://waypoint-jade-kappa.vercel.app/api/auth/callback/google`
+4. Copy the generated **Client ID** and **Client Secret**.
+5. Add them to your environment variables (`.env.local` locally and Vercel Project Settings in production):
+   ```env
+   GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com"
+   GOOGLE_CLIENT_SECRET="your-client-secret"
+   ```
+6. When these variables are set, Waypoint automatically activates the "Continue with Google" buttons on `/login` and `/signup`. When unset, buttons display a disabled `"Google sign-in not configured"` state.
+
+---
+
 ## 🚀 Deployment to Vercel
 
 Waypoint is pre-configured for one-click deployment on [Vercel](https://vercel.com):

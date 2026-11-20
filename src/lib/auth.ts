@@ -121,10 +121,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        if (!user.email) return false;
+        const normalizedEmail = user.email.toLowerCase().trim();
+
+        const existingUser = await db.user.findUnique({
+          where: { email: normalizedEmail },
+        });
+
+        if (existingUser) {
+          // If the user previously registered with a password, prevent silent account takeover!
+          // Direct them to log in with their credentials.
+          if (existingUser.passwordHash) {
+            return "/login?error=OAuthAccountNotLinked";
+          }
+        } else {
+          // New Google OAuth sign up: auto-create the user profile
+          await db.user.create({
+            data: {
+              email: normalizedEmail,
+              name: user.name || "Google User",
+              image: user.image || null,
+              emailVerified: new Date(),
+            },
+          });
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
+        if (account?.provider === "google" && user.email) {
+          const dbUser = await db.user.findUnique({
+            where: { email: user.email.toLowerCase().trim() },
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+          }
+        } else {
+          token.id = user.id;
+          token.role = user.role;
+        }
       }
       return token;
     },

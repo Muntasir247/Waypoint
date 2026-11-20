@@ -6,6 +6,7 @@ import { Compass, ArrowRight, Loader2, CheckCircle2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { registerAction } from "@/features/auth/actions";
+import { PasswordInput } from "@/components/ui/password-input";
 
 interface SignUpFormProps {
   isGoogleConfigured: boolean;
@@ -129,14 +130,14 @@ export function SignUpForm({ isGoogleConfigured }: SignUpFormProps) {
               <label htmlFor="password" className="text-foreground block text-xs font-medium">
                 Password (min 8 characters, letter & number)
               </label>
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground focus:bg-background mt-1 h-9 w-full rounded-xl border px-3 text-xs focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-hidden"
+                autoComplete="new-password"
+                className="mt-1"
               />
             </div>
 
@@ -147,14 +148,14 @@ export function SignUpForm({ isGoogleConfigured }: SignUpFormProps) {
               >
                 Confirm Password
               </label>
-              <input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground focus:bg-background mt-1 h-9 w-full rounded-xl border px-3 text-xs focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-hidden"
+                autoComplete="new-password"
+                className="mt-1"
               />
             </div>
 

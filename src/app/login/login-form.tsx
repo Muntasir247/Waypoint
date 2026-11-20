@@ -15,6 +15,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PasswordInput } from "@/components/ui/password-input";
 
 interface LoginFormProps {
   isGoogleConfigured: boolean;
@@ -204,14 +205,14 @@ export function LoginForm({ isGoogleConfigured }: LoginFormProps) {
                 Forgot password?
               </Link>
             </div>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="border-border bg-muted/30 text-foreground placeholder:text-muted-foreground focus:bg-background mt-1 h-9 w-full rounded-xl border px-3 text-xs focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-hidden"
+              autoComplete="current-password"
+              className="mt-1"
             />
           </div>
 

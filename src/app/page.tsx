@@ -4,7 +4,6 @@ import { AuthenticatedHome } from "@/components/home/authenticated-home";
 import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
 export const instant = false;
 
 export default async function HomePage() {

@@ -56,19 +56,29 @@ export default function ForgotPasswordPage() {
             <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-300">
               <CheckCircle2 className="h-6 w-6" />
             </div>
-            <h2 className="text-foreground mt-3 text-base font-semibold">Check Demo Outbox</h2>
+            <h2 className="text-foreground mt-3 text-base font-semibold">
+              {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? "Check Demo Outbox" : "Check Your Inbox"}
+            </h2>
             <p className="text-muted-foreground mt-2 text-xs">
-              A simulated password reset email has been generated and dispatched to the{" "}
-              <strong>Demo Outbox</strong>.
+              {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (
+                <>
+                  A simulated password reset email has been generated and dispatched to the{" "}
+                  <strong>Demo Outbox</strong>.
+                </>
+              ) : (
+                "A password reset link has been dispatched to your email address."
+              )}
             </p>
             <div className="mt-5 flex flex-col gap-2">
-              <Link
-                href="/demo-outbox"
-                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                <span>Open Demo Outbox</span>
-              </Link>
+              {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+                <Link
+                  href="/demo-outbox"
+                  className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  <span>Open Demo Outbox</span>
+                </Link>
+              )}
               <Link
                 href="/login"
                 className="border-border bg-card text-foreground hover:bg-muted inline-flex h-9 items-center justify-center rounded-xl border px-4 text-xs font-semibold shadow-xs transition-colors"

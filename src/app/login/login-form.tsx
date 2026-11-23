@@ -31,6 +31,7 @@ export function LoginForm({ isGoogleConfigured }: LoginFormProps) {
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [demoLoading, setDemoLoading] = React.useState<string | null>(null);
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
   React.useEffect(() => {
     if (errorParam === "OAuthAccountNotLinked") {
@@ -315,12 +316,14 @@ export function LoginForm({ isGoogleConfigured }: LoginFormProps) {
             Create an account
           </Link>
         </p>
-        <p className="text-muted-foreground/60 text-[11px]">
-          Simulated transactional emails can be viewed in the{" "}
-          <Link href="/demo-outbox" className="underline hover:text-indigo-600">
-            Demo Outbox
-          </Link>
-        </p>
+        {isDemoMode && (
+          <p className="text-muted-foreground/60 text-[11px]">
+            Simulated transactional emails can be viewed in the{" "}
+            <Link href="/demo-outbox" className="underline hover:text-indigo-600">
+              Demo Outbox
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

@@ -108,12 +108,14 @@ function VerifyEmailContent() {
           <h2 className="text-foreground mt-4 text-lg font-bold">Verification Failed</h2>
           <p className="text-muted-foreground mt-1 text-xs">{errorMessage}</p>
           <div className="mt-6 flex flex-col gap-2">
-            <Link
-              href="/demo-outbox"
-              className="inline-flex h-9 w-full items-center justify-center rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700"
-            >
-              Check Demo Outbox
-            </Link>
+            {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+              <Link
+                href="/demo-outbox"
+                className="inline-flex h-9 w-full items-center justify-center rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700"
+              >
+                Check Demo Outbox
+              </Link>
+            )}
             <Link
               href="/login"
               className="border-border bg-card text-foreground hover:bg-muted inline-flex h-9 w-full items-center justify-center rounded-xl border px-4 text-xs font-semibold shadow-xs transition-colors"

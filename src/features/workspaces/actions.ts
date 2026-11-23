@@ -95,11 +95,15 @@ export async function getCurrentUserAndWorkspace() {
 
   if (!activeMembership) {
     activeMembership = memberships[0];
-    cookieStore.set(WORKSPACE_COOKIE_NAME, activeMembership.workspaceId, {
-      path: "/",
-      maxAge: 30 * 24 * 60 * 60,
-      sameSite: "lax",
-    });
+    try {
+      cookieStore.set(WORKSPACE_COOKIE_NAME, activeMembership.workspaceId, {
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60,
+        sameSite: "lax",
+      });
+    } catch {
+      // In Server Components, cookies cannot be modified during render.
+    }
   }
 
   const workspacesList = memberships.map((m) => ({

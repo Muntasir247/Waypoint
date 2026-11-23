@@ -1,4 +1,4 @@
-import { Priority } from "@prisma/client";
+import { Priority } from "@/types/enums";
 import { defaultScoringRules, ScoringRules, ScoreBreakdown } from "./schemas";
 
 interface CalculateScoreParams {
@@ -28,7 +28,7 @@ export function calculateTaskScore({
   rules = defaultScoringRules,
 }: CalculateScoreParams): ScoreBreakdown {
   const safeEstimate = Math.max(0, estimatePoints || 1);
-  const priorityMult = rules.priorityMultipliers[priority] ?? 1.0;
+  const priorityMult = (rules.priorityMultipliers as Record<string, number>)[priority] ?? 1.0;
   const basePoints = Math.round(safeEstimate * priorityMult * 100) / 100;
 
   const completedTime =

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Rocket, X, AlertCircle } from "lucide-react";
 import { createSprintAction } from "@/features/projects/actions";
-import { SprintStatus } from "@prisma/client";
+import { SprintStatus } from "@/types/enums";
 
 interface CreateSprintModalProps {
   projectId: string;
@@ -38,7 +38,7 @@ export function CreateSprintModal({
         projectId,
         name,
         goal: goal || null,
-        status,
+        status: status as any,
         startDate: startDate || null,
         endDate: endDate || null,
       });

@@ -14,7 +14,7 @@ export default async function ProfilePage() {
 
   return (
     <AppShell>
-      <ProfileView profile={res.profile} isSelf={res.isSelf ?? true} />
+      <ProfileView profile={res.profile as any} isSelf={res.isSelf ?? true} />
     </AppShell>
   );
 }

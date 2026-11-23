@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 import { sendWorkspaceDigestsAction } from "./actions";
 import { db } from "@/lib/db";
 import { mockEmailProvider } from "@/features/email/mock-provider";

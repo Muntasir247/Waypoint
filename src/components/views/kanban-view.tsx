@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@/types/enums";
 import { Plus, AlertCircle, ShieldAlert } from "lucide-react";
 import { TaskItem, STATUS_CONFIG } from "./types";
 import { TaskCard } from "./task-card";
@@ -317,7 +317,7 @@ export function KanbanView({
     // Execute move action
     const res = await moveTaskAction({
       taskId: activeTaskId,
-      newStatus: targetStatus,
+      newStatus: targetStatus as any,
       newPosition: targetPosition,
     });
 

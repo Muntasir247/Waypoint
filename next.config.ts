@@ -6,7 +6,7 @@ const cspHeader = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https://*.public.blob.vercel-storage.com https://lh3.googleusercontent.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://accounts.google.com https://*.supabase.co https://*.pooler.supabase.com",
+  "connect-src 'self' https://accounts.google.com https://*.supabase.co https://*.pooler.supabase.com https://*.turso.io wss://*.turso.io",
   "frame-ancestors 'none'",
   "form-action 'self' https://accounts.google.com",
 ].join("; ");

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Calendar, CheckSquare, ArrowUpDown, CheckCircle2 } from "lucide-react";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 import { TaskItem, STATUS_CONFIG, PRIORITY_CONFIG } from "./types";
 import { formatDate, isOverdue, isDueSoon } from "@/lib/date-utils";
 import { updateTaskStatusAction } from "@/features/tasks/actions";
@@ -90,9 +90,9 @@ export function ListView({
     if (newStatus === TaskStatus.BLOCKED && !task.blockedReason) {
       const reason = prompt("Please provide a reason for blocking this task:");
       if (!reason) return;
-      await updateTaskStatusAction({ id: taskId, status: newStatus, blockedReason: reason });
+      await updateTaskStatusAction({ id: taskId, status: newStatus as any, blockedReason: reason });
     } else {
-      await updateTaskStatusAction({ id: taskId, status: newStatus });
+      await updateTaskStatusAction({ id: taskId, status: newStatus as any });
     }
     onRefresh?.();
   }

@@ -125,55 +125,57 @@ export function LoginForm({ isGoogleConfigured }: LoginFormProps) {
       )}
 
       {/* Demo Fast-Track Card */}
-      <div className="to-card rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50/70 p-4 shadow-xs dark:border-indigo-900/60 dark:from-indigo-950/30">
-        <div className="flex items-center gap-1.5 pb-2.5 text-xs font-semibold text-indigo-950 dark:text-indigo-200">
-          <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-          <span>Try the Demo (One-Click Sign-in)</span>
-        </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <button
-            type="button"
-            onClick={() => handleDemoLogin("techlead@waypoint.demo", "Tech Lead (Admin)")}
-            disabled={!!demoLoading}
-            className="border-border bg-card hover:bg-muted text-foreground flex flex-col items-center justify-center rounded-xl border p-2.5 text-center shadow-xs transition-colors disabled:opacity-50"
-          >
-            <Shield className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            <span className="mt-1 text-xs font-semibold">Tech Lead</span>
-            <span className="text-muted-foreground text-[10px]">Admin Full</span>
-            {demoLoading === "techlead@waypoint.demo" && (
-              <Loader2 className="mt-1.5 h-3 w-3 animate-spin text-indigo-600" />
-            )}
-          </button>
+      {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+        <div className="to-card rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50/70 p-4 shadow-xs dark:border-indigo-900/60 dark:from-indigo-950/30">
+          <div className="flex items-center gap-1.5 pb-2.5 text-xs font-semibold text-indigo-950 dark:text-indigo-200">
+            <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+            <span>Try the Demo (One-Click Sign-in)</span>
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("techlead@waypoint.demo", "Tech Lead (Admin)")}
+              disabled={!!demoLoading}
+              className="border-border bg-card hover:bg-muted text-foreground flex flex-col items-center justify-center rounded-xl border p-2.5 text-center shadow-xs transition-colors disabled:opacity-50"
+            >
+              <Shield className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <span className="mt-1 text-xs font-semibold">Tech Lead</span>
+              <span className="text-muted-foreground text-[10px]">Admin Full</span>
+              {demoLoading === "techlead@waypoint.demo" && (
+                <Loader2 className="mt-1.5 h-3 w-3 animate-spin text-indigo-600" />
+              )}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => handleDemoLogin("developer@waypoint.demo", "Developer")}
-            disabled={!!demoLoading}
-            className="border-border bg-card hover:bg-muted text-foreground flex flex-col items-center justify-center rounded-xl border p-2.5 text-center shadow-xs transition-colors disabled:opacity-50"
-          >
-            <UserCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="mt-1 text-xs font-semibold">Developer</span>
-            <span className="text-muted-foreground text-[10px]">My Tasks</span>
-            {demoLoading === "developer@waypoint.demo" && (
-              <Loader2 className="mt-1.5 h-3 w-3 animate-spin text-emerald-600" />
-            )}
-          </button>
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("developer@waypoint.demo", "Developer")}
+              disabled={!!demoLoading}
+              className="border-border bg-card hover:bg-muted text-foreground flex flex-col items-center justify-center rounded-xl border p-2.5 text-center shadow-xs transition-colors disabled:opacity-50"
+            >
+              <UserCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <span className="mt-1 text-xs font-semibold">Developer</span>
+              <span className="text-muted-foreground text-[10px]">My Tasks</span>
+              {demoLoading === "developer@waypoint.demo" && (
+                <Loader2 className="mt-1.5 h-3 w-3 animate-spin text-emerald-600" />
+              )}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => handleDemoLogin("viewer@waypoint.demo", "Viewer")}
-            disabled={!!demoLoading}
-            className="border-border bg-card hover:bg-muted text-foreground flex flex-col items-center justify-center rounded-xl border p-2.5 text-center shadow-xs transition-colors disabled:opacity-50"
-          >
-            <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
-            <span className="mt-1 text-xs font-semibold">Viewer</span>
-            <span className="text-muted-foreground text-[10px]">Read-Only</span>
-            {demoLoading === "viewer@waypoint.demo" && (
-              <Loader2 className="mt-1.5 h-3 w-3 animate-spin text-slate-500" />
-            )}
-          </button>
+            <button
+              type="button"
+              onClick={() => handleDemoLogin("viewer@waypoint.demo", "Viewer")}
+              disabled={!!demoLoading}
+              className="border-border bg-card hover:bg-muted text-foreground flex flex-col items-center justify-center rounded-xl border p-2.5 text-center shadow-xs transition-colors disabled:opacity-50"
+            >
+              <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <span className="mt-1 text-xs font-semibold">Viewer</span>
+              <span className="text-muted-foreground text-[10px]">Read-Only</span>
+              {demoLoading === "viewer@waypoint.demo" && (
+                <Loader2 className="mt-1.5 h-3 w-3 animate-spin text-slate-500" />
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Traditional Credentials Form Card */}
       <div className="border-border bg-card rounded-2xl border p-6 shadow-sm">

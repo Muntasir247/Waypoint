@@ -11,7 +11,7 @@ import {
   Play,
   RotateCcw,
 } from "lucide-react";
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@/types/enums";
 import { TaskItem, STATUS_CONFIG, PRIORITY_CONFIG } from "./types";
 import { KanbanView } from "./kanban-view";
 import { CalendarView } from "./calendar-view";
@@ -78,12 +78,12 @@ export function MyTasksView({
       if (!reason) return;
       const res = await updateTaskStatusAction({
         id: taskId,
-        status: newStatus,
+        status: newStatus as any,
         blockedReason: reason,
       });
       if (res.error) alert(res.error);
     } else {
-      const res = await updateTaskStatusAction({ id: taskId, status: newStatus });
+      const res = await updateTaskStatusAction({ id: taskId, status: newStatus as any });
       if (res.error) alert(res.error);
     }
     refreshData();

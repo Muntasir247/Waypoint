@@ -26,7 +26,7 @@ import {
   type CreateTimeEntryInput,
   type TaskDependencyInput,
 } from "./schemas";
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@/types/enums";
 import { recordTaskCompletionScore, recordTaskReopeningReversal } from "@/features/scoring/actions";
 
 /**
@@ -1223,8 +1223,8 @@ export async function getSmartSuggestionsAction(params: {
       name: m.user.name || m.user.email.split("@")[0],
       email: m.user.email,
       avatarUrl: m.user.image,
-      role: m.role,
-      availability: m.availability,
+      role: m.role as any,
+      availability: m.availability as any,
       skills: m.memberSkills.map((ms) => ({
         name: ms.skill.name,
         level: ms.level,

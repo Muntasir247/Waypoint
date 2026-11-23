@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Role } from "@prisma/client";
+import { Role } from "@/types/enums";
 import { getAuditLogsAction } from "./actions";
 import { db } from "@/lib/db";
 import * as workspacesActions from "@/features/workspaces/actions";

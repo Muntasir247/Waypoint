@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 import {
   type GetReportsInput,
   getReportsInputSchema,
@@ -129,7 +129,7 @@ export async function getMonthlyReportAction(input?: GetReportsInput): Promise<{
         labels: {
           some: {
             label: {
-              name: { contains: "bug", mode: "insensitive" },
+              name: { contains: "bug" },
             },
           },
         },

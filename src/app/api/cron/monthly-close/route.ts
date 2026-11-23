@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@/types/enums";
 import { ensureSystemBadges, awardBadgeToMember } from "@/features/scoring/badges";
 import { validateCronRequest } from "@/lib/cron-auth";
 

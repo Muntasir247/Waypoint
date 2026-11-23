@@ -1,4 +1,5 @@
-import { PrismaClient, Role, TaskStatus, Priority, Availability } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { Role, TaskStatus, Priority, Availability } from "../src/types/enums";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();

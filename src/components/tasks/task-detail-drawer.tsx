@@ -30,7 +30,7 @@ import {
   removeDependencyAction,
   getTasksAction,
 } from "@/features/tasks/actions";
-import { TaskStatus, Priority, AttachmentType } from "@prisma/client";
+import { TaskStatus, Priority, AttachmentType } from "@/types/enums";
 
 interface ChecklistItemData {
   id: string;
@@ -227,7 +227,7 @@ export function TaskDetailDrawer({
 
     const res = await updateTaskStatusAction({
       id: taskId!,
-      status: nextStatus,
+      status: nextStatus as any,
     });
 
     if (res.error) {

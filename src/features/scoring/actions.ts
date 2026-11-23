@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { assertCan } from "@/lib/permissions";
 import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 import {
   defaultScoringRules,
   updateScoringConfigSchema,
@@ -45,10 +45,34 @@ export async function getWorkspaceScoringConfigAction(): Promise<{
     });
   }
 
+  const rawRules = (scoringConfig.rules as any) || {};
+  const rules: ScoringRules = {
+    ...defaultScoringRules,
+    ...rawRules,
+    priorityMultipliers: {
+      ...defaultScoringRules.priorityMultipliers,
+      ...(rawRules.priorityMultipliers || {}),
+    },
+    onTimeMultiplier:
+      rawRules.onTimeMultiplier ?? rawRules.onTimeBonus ?? defaultScoringRules.onTimeMultiplier,
+    lateMultiplier:
+      rawRules.lateMultiplier ?? rawRules.latePenalty ?? defaultScoringRules.lateMultiplier,
+    bounceDeductionPercent:
+      rawRules.bounceDeductionPercent ??
+      rawRules.bouncePenaltyPercent ??
+      defaultScoringRules.bounceDeductionPercent,
+    maxBounceDeductionPercent:
+      rawRules.maxBounceDeductionPercent ?? defaultScoringRules.maxBounceDeductionPercent,
+    noDueDateMultiplier:
+      rawRules.noDueDateMultiplier ?? defaultScoringRules.noDueDateMultiplier,
+    capacityLimit:
+      rawRules.capacityLimit ?? rawRules.capacityLimitPoints ?? defaultScoringRules.capacityLimit,
+  };
+
   return {
     config: {
       enabled: scoringConfig.enabled,
-      rules: (scoringConfig.rules as ScoringRules) || defaultScoringRules,
+      rules,
     },
     error: null,
   };
@@ -237,7 +261,7 @@ export async function recordTaskCompletionScore(taskId: string) {
         status: TaskStatus.DONE,
         OR: [
           { priority: Priority.CRITICAL },
-          { labels: { some: { label: { name: { contains: "bug", mode: "insensitive" } } } } },
+          { labels: { some: { label: { name: { contains: "bug" } } } } },
         ],
       },
     });

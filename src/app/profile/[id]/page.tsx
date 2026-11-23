@@ -19,7 +19,7 @@ export default async function MemberProfilePage({ params }: MemberProfilePagePro
 
   return (
     <AppShell>
-      <ProfileView profile={res.profile} isSelf={res.isSelf ?? false} />
+      <ProfileView profile={res.profile as any} isSelf={res.isSelf ?? false} />
     </AppShell>
   );
 }

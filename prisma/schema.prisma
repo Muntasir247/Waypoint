@@ -1,10 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // --------------------------------------------------------
@@ -37,12 +38,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -73,18 +74,6 @@ model VerificationToken {
 // Workspace & Membership (Multi-tenant)
 // --------------------------------------------------------
 
-enum Role {
-  ADMIN
-  DEVELOPER
-  VIEWER
-}
-
-enum Availability {
-  ACTIVE
-  ON_LEAVE
-  OVERLOADED
-}
-
 model Workspace {
   id                         String         @id @default(cuid())
   name                       String
@@ -111,8 +100,8 @@ model Membership {
   id           String       @id @default(cuid())
   userId       String
   workspaceId  String
-  role         Role         @default(DEVELOPER)
-  availability Availability @default(ACTIVE)
+  role         String       @default("DEVELOPER")
+  availability String       @default("ACTIVE")
   joinedAt     DateTime     @default(now())
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -136,7 +125,7 @@ model Invite {
   id          String    @id @default(cuid())
   workspaceId String
   email       String
-  role        Role      @default(DEVELOPER)
+  role        String    @default("DEVELOPER")
   token       String    @unique
   expiresAt   DateTime
   acceptedAt  DateTime?
@@ -179,19 +168,12 @@ model MemberSkill {
 // Projects, Sprints & Milestones
 // --------------------------------------------------------
 
-enum ProjectStatus {
-  PLANNING
-  ACTIVE
-  ON_HOLD
-  COMPLETED
-}
-
 model Project {
   id          String        @id @default(cuid())
   workspaceId String
   name        String
-  description String?       @db.Text
-  status      ProjectStatus @default(ACTIVE)
+  description String?
+  status      String        @default("ACTIVE")
   targetDate  DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -204,20 +186,14 @@ model Project {
   @@index([workspaceId])
 }
 
-enum SprintStatus {
-  PLANNED
-  ACTIVE
-  CLOSED
-}
-
 model Sprint {
   id        String       @id @default(cuid())
   projectId String
   name      String
-  goal      String?      @db.Text
+  goal      String?
   startDate DateTime?
   endDate   DateTime?
-  status    SprintStatus @default(PLANNED)
+  status    String       @default("PLANNED")
   createdAt DateTime     @default(now())
 
   project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -230,7 +206,7 @@ model Milestone {
   id          String    @id @default(cuid())
   projectId   String
   name        String
-  description String?   @db.Text
+  description String?
   dueDate     DateTime?
   createdAt   DateTime  @default(now())
 
@@ -244,36 +220,21 @@ model Milestone {
 // Tasks & Execution
 // --------------------------------------------------------
 
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  IN_REVIEW
-  DONE
-  BLOCKED
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
 model Task {
   id             String      @id @default(cuid())
   projectId      String
   sprintId       String?
   milestoneId    String?
   title          String
-  description    String?     @db.Text
-  status         TaskStatus  @default(TODO)
-  priority       Priority    @default(MEDIUM)
+  description    String?
+  status         String      @default("TODO")
+  priority       String      @default("MEDIUM")
   estimatePoints Int         @default(1) // 1, 2, 3, 5, 8
   dueDate        DateTime?
   assigneeId     String?
   createdById    String
   position       Float       @default(0)
-  blockedReason  String?     @db.Text
+  blockedReason  String?
   completedAt    DateTime?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
@@ -356,7 +317,7 @@ model Comment {
   id        String     @id @default(cuid())
   taskId    String
   authorId  String
-  body      String     @db.Text
+  body      String
   createdAt DateTime   @default(now())
 
   task      Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
@@ -365,16 +326,11 @@ model Comment {
   @@index([taskId])
 }
 
-enum AttachmentType {
-  FILE
-  LINK
-}
-
 model Attachment {
   id        String         @id @default(cuid())
   taskId    String
-  type      AttachmentType @default(LINK)
-  url       String         @db.Text
+  type      String         @default("LINK")
+  url       String
   name      String
   createdAt DateTime       @default(now())
 
@@ -388,7 +344,7 @@ model TimeEntry {
   taskId       String
   membershipId String
   minutes      Int
-  note         String?    @db.Text
+  note         String?
   loggedAt     DateTime   @default(now())
 
   task         Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
@@ -403,8 +359,8 @@ model ActivityLog {
   taskId    String
   actorId   String
   action    String
-  fromValue String?    @db.Text
-  toValue   String?    @db.Text
+  fromValue String?
+  toValue   String?
   createdAt DateTime   @default(now())
 
   task      Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
@@ -452,7 +408,7 @@ model MockEmail {
   id        String   @id @default(cuid())
   to        String
   subject   String
-  body      String   @db.Text
+  body      String
   kind      String   // e.g. "INVITE", "VERIFY_EMAIL", "PASSWORD_RESET", "DIGEST"
   createdAt DateTime @default(now())
 
@@ -542,4 +498,3 @@ model SavedFilter {
 
   @@index([userId, workspaceId])
 }
-

@@ -86,7 +86,7 @@ export async function registerAction(formData: unknown): Promise<ActionResult<{ 
 
   return {
     success: true,
-    message: "Account created successfully! A verification link was simulated in the Demo Outbox.",
+    message: "Account created successfully! You can now sign in to your workspace.",
     data: { userId: user.id },
   };
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Role, Priority, Availability } from "@prisma/client";
+import { Role, Priority, Availability } from "@/types/enums";
 import { can } from "@/lib/permissions";
 import { calculateTaskScore } from "@/features/scoring/calculator";
 import { rankTaskAssignmentCandidates } from "./smart-assignment";

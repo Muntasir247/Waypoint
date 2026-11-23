@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Priority } from "@prisma/client";
+import { Priority } from "@/types/enums";
 
 export const defaultScoringRules = {
   priorityMultipliers: {

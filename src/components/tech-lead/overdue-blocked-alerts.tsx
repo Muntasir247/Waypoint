@@ -4,7 +4,7 @@ import * as React from "react";
 import { Ban, Clock, CheckCircle2, ExternalLink } from "lucide-react";
 import type { DashboardMetrics } from "@/features/tech-lead/actions";
 import { updateTaskStatusAction } from "@/features/tasks/actions";
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@/types/enums";
 
 interface OverdueBlockedAlertsProps {
   overdueTasks: DashboardMetrics["overdueTasks"];

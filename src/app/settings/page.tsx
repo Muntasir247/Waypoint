@@ -141,7 +141,7 @@ export default function SettingsPage() {
             <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
               <span>Workspaces</span>
               <span>/</span>
-              <span className="text-foreground">{workspaceName || "Acme Engineering"}</span>
+              <span className="text-foreground">{workspaceName || "Workspace"}</span>
               <span>/</span>
               <span className="text-primary font-semibold">Settings</span>
             </div>

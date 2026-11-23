@@ -33,7 +33,7 @@ export default async function TeamPage() {
   if (membership.role === "ADMIN") {
     const invitesRes = await getPendingInvitesAction(workspace.id);
     if (invitesRes.success && invitesRes.invites) {
-      pendingInvites = invitesRes.invites;
+      pendingInvites = invitesRes.invites as any;
     }
   }
 
@@ -41,8 +41,8 @@ export default async function TeamPage() {
     <AppShell>
       <TeamManagementView
         workspace={workspace}
-        currentUserMembership={membership}
-        members={members}
+        currentUserMembership={membership as any}
+        members={members as any}
         pendingInvites={pendingInvites}
       />
     </AppShell>

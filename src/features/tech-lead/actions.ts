@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { assertCan } from "@/lib/permissions";
 import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
-import { TaskStatus, Priority, Role } from "@prisma/client";
+import { TaskStatus, Priority, Role } from "@/types/enums";
 import {
   bulkUpdateTasksSchema,
   reassignMemberTasksSchema,
@@ -105,8 +105,8 @@ export async function getWorkspaceWorkloadAction(): Promise<{
       name: m.user.name || m.user.email.split("@")[0] || "Member",
       email: m.user.email,
       avatarUrl: m.user.image,
-      role: m.role,
-      availability: m.availability,
+      role: m.role as any,
+      availability: m.availability as any,
       skills: m.memberSkills.map((ms) => ({
         name: ms.skill.name,
         level: ms.level,

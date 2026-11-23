@@ -6,7 +6,7 @@ import { FolderGit2, Plus, Search, Calendar, Rocket } from "lucide-react";
 import { getProjectsAction } from "@/features/projects/actions";
 import { CreateProjectModal } from "@/components/projects/create-project-modal";
 import { CreateTaskModal } from "@/components/tasks/create-task-modal";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus } from "@/types/enums";
 
 export interface ProjectItem {
   id: string;
@@ -166,7 +166,7 @@ export function ProjectsDirectoryView({ initialProjects }: ProjectsDirectoryView
                   <div className="flex items-center justify-between">
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wider uppercase ${
-                        statusColors[p.status] || "bg-muted text-muted-foreground"
+                        (statusColors as Record<string, string>)[p.status] || "bg-muted text-muted-foreground"
                       }`}
                     >
                       {p.status.replace("_", " ")}

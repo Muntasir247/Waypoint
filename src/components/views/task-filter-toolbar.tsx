@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Search, X, Filter, User, Tag, Bookmark, Trash2, Plus, RotateCcw } from "lucide-react";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 import { FilterState, STATUS_CONFIG, PRIORITY_CONFIG } from "./types";
 import {
   getSavedFiltersAction,
@@ -88,8 +88,8 @@ export function TaskFilterToolbar({
       query: {
         search: filter.search || undefined,
         assigneeIds: filter.assigneeIds.length > 0 ? filter.assigneeIds : undefined,
-        statuses: filter.statuses.length > 0 ? filter.statuses : undefined,
-        priorities: filter.priorities.length > 0 ? filter.priorities : undefined,
+        statuses: filter.statuses.length > 0 ? (filter.statuses as any) : undefined,
+        priorities: filter.priorities.length > 0 ? (filter.priorities as any) : undefined,
         labels: filter.labels.length > 0 ? filter.labels : undefined,
         dueDate: filter.dueDate,
         projectId: filter.projectId || undefined,

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TaskStatus, Priority, AttachmentType } from "@prisma/client";
+import { TaskStatus, Priority, AttachmentType } from "@/types/enums";
 
 export const createTaskSchema = z.object({
   projectId: z.string().min(1, "Project is required"),

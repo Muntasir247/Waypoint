@@ -43,8 +43,8 @@ export async function getAuditLogsAction(input?: GetAuditLogsInput): Promise<{
 
     if (search && search.trim()) {
       whereClause.OR = [
-        { target: { contains: search.trim(), mode: "insensitive" } },
-        { action: { contains: search.trim(), mode: "insensitive" } },
+        { target: { contains: search.trim() } },
+        { action: { contains: search.trim() } },
       ];
     }
 

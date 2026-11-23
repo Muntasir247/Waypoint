@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { TaskStatus, Priority, Role } from "@prisma/client";
+import { TaskStatus, Priority, Role } from "@/types/enums";
 import { getMonthlyReportAction } from "./actions";
 import { generateReportCSV } from "./csv-export";
 import { db } from "@/lib/db";

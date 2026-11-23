@@ -12,7 +12,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 import { bulkUpdateTasksAction } from "@/features/tech-lead/actions";
 
 interface BulkActionsToolbarProps {
@@ -53,7 +53,7 @@ export function BulkActionsToolbar({
       setError(null);
       const res = await bulkUpdateTasksAction({
         taskIds: selectedTaskIds,
-        ...payload,
+        ...(payload as any),
       });
 
       if (res.error) {

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { FolderGit2, X, AlertCircle } from "lucide-react";
 import { createProjectAction } from "@/features/projects/actions";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus } from "@/types/enums";
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -30,7 +30,7 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }: Create
       const res = await createProjectAction({
         name,
         description: description || null,
-        status,
+        status: status as any,
         targetDate: targetDate || null,
       });
 

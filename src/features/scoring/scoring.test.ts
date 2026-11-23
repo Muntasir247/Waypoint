@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Priority, Role } from "@prisma/client";
+import { Priority, Role } from "@/types/enums";
 import { calculateTaskScore } from "./calculator";
 import { defaultScoringRules } from "./schemas";
 import {

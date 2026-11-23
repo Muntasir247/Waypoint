@@ -48,7 +48,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
       </div>
       <div className="flex w-full justify-center py-12">
         <AcceptInviteCard
-          invite={res.invite}
+          invite={res.invite as any}
           isAuthenticated={Boolean(session?.user)}
           currentUserEmail={session?.user?.email}
           token={token}

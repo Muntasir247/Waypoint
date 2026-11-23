@@ -1,4 +1,4 @@
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 
 export interface TaskItem {
   id: string;

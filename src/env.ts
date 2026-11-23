@@ -2,7 +2,9 @@ import { z } from "zod";
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  DATABASE_URL: z.string().url().default("postgresql://postgres:postgres@localhost:5432/waypoint"),
+  DATABASE_URL: z.string().min(1).default("file:./dev.db"),
+  TURSO_DATABASE_URL: z.string().optional(),
+  TURSO_AUTH_TOKEN: z.string().optional(),
   AUTH_SECRET: z
     .string()
     .min(1)
@@ -14,7 +16,7 @@ const envSchema = z.object({
   CRON_SECRET: z.string().optional().default("dev_cron_secret"),
   NEXT_PUBLIC_DEMO_MODE: z
     .enum(["true", "false"])
-    .default("true")
+    .default("false")
     .transform((val) => val === "true"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
 });
@@ -22,6 +24,8 @@ const envSchema = z.object({
 const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   DATABASE_URL: process.env.DATABASE_URL,
+  TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
+  TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
   AUTH_SECRET: process.env.AUTH_SECRET,
   AUTH_URL: process.env.AUTH_URL,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

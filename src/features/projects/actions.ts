@@ -83,57 +83,9 @@ export async function getProjectsAction() {
     });
 
     return { projects: formatted, error: null };
-  } catch {
-    return {
-      projects: [
-        {
-          id: "proj-1",
-          name: "Core API v2",
-          description: "High-performance distributed backend service",
-          status: "ACTIVE" as const,
-          targetDate: new Date(Date.now() + 14 * 86400000).toISOString(),
-          createdAt: new Date().toISOString(),
-          activeSprint: { id: "sprint-1", name: "Sprint 24" },
-          milestonesCount: 2,
-          totalTasks: 18,
-          completedTasks: 12,
-          progressPercent: 67,
-          totalPoints: 45,
-          completedPoints: 30,
-        },
-        {
-          id: "proj-2",
-          name: "Mobile Client",
-          description: "Cross-platform engineering mobile application",
-          status: "ACTIVE" as const,
-          targetDate: new Date(Date.now() + 30 * 86400000).toISOString(),
-          createdAt: new Date().toISOString(),
-          activeSprint: { id: "sprint-2", name: "Sprint 12" },
-          milestonesCount: 1,
-          totalTasks: 10,
-          completedTasks: 8,
-          progressPercent: 80,
-          totalPoints: 25,
-          completedPoints: 20,
-        },
-        {
-          id: "proj-3",
-          name: "Infra Migration",
-          description: "Multi-region cluster migration",
-          status: "ON_HOLD" as const,
-          targetDate: null,
-          createdAt: new Date().toISOString(),
-          activeSprint: null,
-          milestonesCount: 1,
-          totalTasks: 6,
-          completedTasks: 2,
-          progressPercent: 33,
-          totalPoints: 15,
-          completedPoints: 5,
-        },
-      ],
-      error: null,
-    };
+  } catch (e) {
+    console.error("getProjectsAction error:", e);
+    return { projects: [], error: "Failed to load projects" };
   }
 }
 

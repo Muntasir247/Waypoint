@@ -87,12 +87,14 @@ export function LandingPageView() {
             >
               Fair Scoring
             </a>
-            <a
-              href="#demo-accounts"
-              className="text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors"
-            >
-              Demo Logins
-            </a>
+            {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+              <a
+                href="#demo-accounts"
+                className="text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors"
+              >
+                Demo Logins
+              </a>
+            )}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -139,21 +141,42 @@ export function LandingPageView() {
 
           {/* Quick Hero CTAs */}
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#demo-accounts"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-indigo-600 px-6 text-sm font-semibold text-white shadow-md shadow-indigo-600/25 transition-all hover:bg-indigo-700 active:scale-98"
-            >
-              <Sparkles className="h-4 w-4" />
-              <span>Try the Demo (1-Click)</span>
-            </a>
+            {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (
+              <>
+                <a
+                  href="#demo-accounts"
+                  className="inline-flex h-11 items-center gap-2 rounded-xl bg-indigo-600 px-6 text-sm font-semibold text-white shadow-md shadow-indigo-600/25 transition-all hover:bg-indigo-700 active:scale-98"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>Try the Demo (1-Click)</span>
+                </a>
 
-            <Link
-              href="/signup"
-              className="border-border bg-card text-foreground hover:bg-muted inline-flex h-11 items-center gap-2 rounded-xl border px-6 text-sm font-semibold shadow-xs transition-colors"
-            >
-              <span>Create Free Workspace</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+                <Link
+                  href="/signup"
+                  className="border-border bg-card text-foreground hover:bg-muted inline-flex h-11 items-center gap-2 rounded-xl border px-6 text-sm font-semibold shadow-xs transition-colors"
+                >
+                  <span>Create Free Workspace</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/signup"
+                  className="inline-flex h-11 items-center gap-2 rounded-xl bg-indigo-600 px-6 text-sm font-semibold text-white shadow-md shadow-indigo-600/25 transition-all hover:bg-indigo-700 active:scale-98"
+                >
+                  <span>Create Free Workspace</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+
+                <Link
+                  href="/login"
+                  className="border-border bg-card text-foreground hover:bg-muted inline-flex h-11 items-center gap-2 rounded-xl border px-6 text-sm font-semibold shadow-xs transition-colors"
+                >
+                  <span>Sign In</span>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Key Value Badges */}
@@ -179,7 +202,8 @@ export function LandingPageView() {
       </section>
 
       {/* Demo Fast-Track Section */}
-      <section id="demo-accounts" className="border-border/60 bg-muted/20 border-y py-16">
+      {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+        <section id="demo-accounts" className="border-border/60 bg-muted/20 border-y py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900 dark:bg-amber-950/80 dark:text-amber-300">
@@ -313,6 +337,7 @@ export function LandingPageView() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Feature Showcase Interactive Tabs */}
       <section id="features" className="py-20">
@@ -568,9 +593,11 @@ export function LandingPageView() {
             <Link href="/login" className="hover:text-foreground transition-colors">
               Sign In
             </Link>
-            <Link href="/demo-outbox" className="hover:text-foreground transition-colors">
-              Demo Outbox
-            </Link>
+            {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+              <Link href="/demo-outbox" className="hover:text-foreground transition-colors">
+                Demo Outbox
+              </Link>
+            )}
             <Link href="/leaderboard" className="hover:text-foreground transition-colors">
               Leaderboard
             </Link>

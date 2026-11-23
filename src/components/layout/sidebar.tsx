@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getMyTasksAction } from "@/features/tasks/actions";
+import { getProjectsAction } from "@/features/projects/actions";
 
 interface NavItem {
   label: string;
@@ -42,11 +43,15 @@ const mainNavItems: NavItem[] = [
 ];
 
 const secondaryNavItems: NavItem[] = [
-  {
-    label: "Demo Outbox",
-    href: "/demo-outbox",
-    icon: Mail,
-  },
+  ...(process.env.NEXT_PUBLIC_DEMO_MODE === "true"
+    ? [
+        {
+          label: "Demo Outbox",
+          href: "/demo-outbox",
+          icon: Mail,
+        },
+      ]
+    : []),
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -54,6 +59,9 @@ export function Sidebar() {
   const pathname = usePathname();
   const [projectsOpen, setProjectsOpen] = React.useState(true);
   const [myTasksCount, setMyTasksCount] = React.useState<number | undefined>(undefined);
+  const [projects, setProjects] = React.useState<
+    Array<{ id: string; name: string; activeSprint?: { name: string } | null; status: string }>
+  >([]);
 
   React.useEffect(() => {
     getMyTasksAction()
@@ -61,6 +69,14 @@ export function Sidebar() {
         if (res.metrics) {
           const activeCount = res.metrics.totalAssigned - res.metrics.done;
           setMyTasksCount(activeCount > 0 ? activeCount : undefined);
+        }
+      })
+      .catch(() => {});
+
+    getProjectsAction()
+      .then((res) => {
+        if (res.projects) {
+          setProjects(res.projects);
         }
       })
       .catch(() => {});
@@ -148,36 +164,38 @@ export function Sidebar() {
           </button>
           {projectsOpen && (
             <div className="space-y-1 pl-2">
-              <Link
-                href="/projects/core-api"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span>Core API v2</span>
+              {projects.length > 0 ? (
+                projects.map((p) => (
+                  <Link
+                    key={p.id}
+                    href={`/projects/${p.id}`}
+                    className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <span
+                        className={cn(
+                          "h-2 w-2 shrink-0 rounded-full",
+                          p.status === "COMPLETED"
+                            ? "bg-emerald-500"
+                            : p.status === "ON_HOLD"
+                              ? "bg-amber-500"
+                              : "bg-indigo-500",
+                        )}
+                      />
+                      <span className="truncate">{p.name}</span>
+                    </div>
+                    {p.activeSprint && (
+                      <span className="text-muted-foreground text-[10px] shrink-0">
+                        {p.activeSprint.name}
+                      </span>
+                    )}
+                  </Link>
+                ))
+              ) : (
+                <div className="text-muted-foreground px-3 py-1.5 text-xs">
+                  No projects yet
                 </div>
-                <span className="text-muted-foreground text-[10px]">Sprint 24</span>
-              </Link>
-              <Link
-                href="/projects/mobile-client"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-indigo-500" />
-                  <span>Mobile Client</span>
-                </div>
-                <span className="text-muted-foreground text-[10px]">Sprint 12</span>
-              </Link>
-              <Link
-                href="/projects/infra-migration"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground flex items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  <span>Infra Migration</span>
-                </div>
-                <span className="text-muted-foreground text-[10px]">Blocked</span>
-              </Link>
+              )}
             </div>
           )}
         </div>
@@ -219,26 +237,24 @@ export function Sidebar() {
       </div>
 
       {/* Bottom Sprint Mini-Widget */}
-      <div className="border-border border-t p-3">
-        <div className="border-border bg-muted/50 rounded-xl border p-3">
-          <div className="flex items-center justify-between pb-1.5">
-            <span className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-              Active Sprint
-            </span>
-            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-              On Track
-            </span>
-          </div>
-          <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-            <div className="h-full w-3/4 rounded-full bg-indigo-600 dark:bg-indigo-500" />
-          </div>
-          <div className="text-muted-foreground mt-1.5 flex items-center justify-between text-[11px]">
-            <span>Velocity</span>
-            <span>74% complete</span>
+      {projects.length > 0 && projects.some((p) => p.activeSprint) ? (
+        <div className="border-border border-t p-3">
+          <div className="border-border bg-muted/50 rounded-xl border p-3">
+            <div className="flex items-center justify-between pb-1.5">
+              <span className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
+                <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                Active Sprint
+              </span>
+              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                On Track
+              </span>
+            </div>
+            <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+              <div className="h-full w-0 rounded-full bg-indigo-600 dark:bg-indigo-500" />
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </aside>
   );
 }

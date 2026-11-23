@@ -5,7 +5,7 @@ import {
   bulkUpdateTasksAction,
   getProjectDashboardAction,
 } from "./actions";
-import { TaskStatus, Priority, Role } from "@prisma/client";
+import { TaskStatus, Priority, Role } from "@/types/enums";
 
 let currentMockUser = {
   id: "usr_admin",

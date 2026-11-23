@@ -41,7 +41,7 @@ export function SignUpForm({ isGoogleConfigured }: SignUpFormProps) {
         toast.error(result.message || "Failed to register.");
       } else {
         setRegistered(true);
-        toast.success("Account created! Check Demo Outbox for verification.");
+        toast.success("Account created successfully!");
       }
     } catch {
       toast.error("An unexpected error occurred.");
@@ -73,22 +73,15 @@ export function SignUpForm({ isGoogleConfigured }: SignUpFormProps) {
           </div>
           <h2 className="text-foreground mt-3 text-base font-semibold">Registration Successful!</h2>
           <p className="text-muted-foreground mt-2 text-xs">
-            A simulated email verification link has been delivered to the{" "}
-            <strong>Demo Outbox</strong>.
+            Your account has been created successfully. You can now sign in to your workspace.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <Link
-              href="/demo-outbox"
+              href="/login"
               className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700"
             >
-              <Mail className="h-3.5 w-3.5" />
-              <span>Open Demo Outbox</span>
-            </Link>
-            <Link
-              href="/login"
-              className="border-border bg-card text-foreground hover:bg-muted inline-flex h-9 items-center justify-center rounded-xl border px-4 text-xs font-semibold shadow-xs transition-colors"
-            >
-              Go to Sign In
+              <span>Go to Sign In</span>
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

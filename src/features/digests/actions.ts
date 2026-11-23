@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { mockEmailProvider } from "@/features/email/mock-provider";
 import { getCurrentUserAndWorkspace } from "@/features/workspaces/actions";
-import { TaskStatus } from "@prisma/client";
+import { TaskStatus } from "@/types/enums";
 
 export interface DigestResult {
   sentCount: number;

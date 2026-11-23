@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "@/types/enums";
 
 export type PermissionAction =
   | "view:workspace"
@@ -31,7 +31,7 @@ export type PermissionAction =
 
 export interface PermissionUserMembership {
   id: string;
-  role: Role | "ADMIN" | "DEVELOPER" | "VIEWER";
+  role: Role | string;
   userId?: string;
   workspaceId?: string;
 }
@@ -201,7 +201,7 @@ export function assertCan(
  * Protects against removing or demoting the last admin in a workspace.
  */
 export function canDemoteOrRemoveAdmin(
-  targetMemberRole: Role | "ADMIN" | "DEVELOPER" | "VIEWER",
+  targetMemberRole: Role | "ADMIN" | "DEVELOPER" | "VIEWER" | string,
   totalAdminsInWorkspace: number,
 ): boolean {
   if (targetMemberRole === "ADMIN" && totalAdminsInWorkspace <= 1) {

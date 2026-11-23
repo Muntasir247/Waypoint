@@ -2,7 +2,8 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import type { Prisma, Role, Workspace } from "@prisma/client";
+import type { Prisma, Workspace } from "@prisma/client";
+import { Role } from "@/types/enums";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
@@ -12,6 +13,7 @@ import {
   type CreateWorkspaceInput,
   type UpdateWorkspaceInput,
 } from "./schemas";
+import { defaultScoringRules } from "@/features/scoring/schemas";
 
 const WORKSPACE_COOKIE_NAME = "waypoint_active_workspace_id";
 
@@ -43,48 +45,37 @@ export async function getCurrentUserAndWorkspace() {
       orderBy: { joinedAt: "asc" },
     });
 
-    // In demo mode, if user has no memberships, auto-seed the demo workspace
+    // If user has no memberships, auto-seed or create clean initial workspace
     if (memberships.length === 0) {
-      const demoWorkspace = await ensureDemoWorkspaceForUser(userId, session.user.email);
-      if (demoWorkspace) {
-        memberships = await db.membership.findMany({
-          where: { userId },
-          include: { workspace: true },
-        });
+      if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+        const demoWorkspace = await ensureDemoWorkspaceForUser(userId, session.user.email);
+        if (demoWorkspace) {
+          memberships = await db.membership.findMany({
+            where: { userId },
+            include: { workspace: true },
+          });
+        }
+      } else {
+        const cleanWorkspace = await ensureCleanWorkspaceForUser(
+          userId,
+          session.user.name,
+          session.user.email,
+        );
+        if (cleanWorkspace) {
+          memberships = await db.membership.findMany({
+            where: { userId },
+            include: { workspace: true },
+          });
+        }
       }
     }
-  } catch {
-    const demoWs: Workspace = {
-      id: "demo-workspace-acme",
-      name: "Acme Engineering",
-      slug: "acme-engineering",
-      createdById: userId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      allowDeveloperCreateTasks: true,
-    };
-    const demoMem: MembershipWithWorkspace = {
-      id: `demo-membership-${userId}`,
-      userId,
-      workspaceId: demoWs.id,
-      role: ((session.user as { role?: Role }).role as Role) || "ADMIN",
-      availability: "ACTIVE",
-      joinedAt: new Date(),
-      workspace: demoWs,
-    };
+  } catch (e) {
+    console.error("getCurrentUserAndWorkspace query error:", e);
     return {
       user: session.user,
-      workspace: demoWs,
-      membership: demoMem,
-      workspaces: [
-        {
-          id: demoWs.id,
-          name: demoWs.name,
-          slug: demoWs.slug,
-          role: demoMem.role,
-          isActive: true,
-        },
-      ],
+      workspace: null,
+      membership: null,
+      workspaces: [],
     };
   }
 
@@ -178,13 +169,7 @@ export async function createWorkspaceAction(input: CreateWorkspaceInput) {
         data: {
           workspaceId: ws.id,
           enabled: true,
-          rules: {
-            priorityMultipliers: { LOW: 1.0, MEDIUM: 1.25, HIGH: 1.5, CRITICAL: 2.0 },
-            onTimeBonus: 1.2,
-            latePenalty: 0.5,
-            bouncePenaltyPercent: 0.1,
-            capacityLimitPoints: 20,
-          },
+          rules: defaultScoringRules,
         },
       });
 
@@ -345,6 +330,66 @@ async function ensureDemoWorkspaceForUser(userId: string, email?: string | null)
     return demoWs;
   } catch (e) {
     console.warn("ensureDemoWorkspaceForUser fallback note:", e);
+    return null;
+  }
+}
+
+/**
+ * Creates a clean default workspace for real users if they do not belong to any workspace.
+ */
+async function ensureCleanWorkspaceForUser(
+  userId: string,
+  name?: string | null,
+  email?: string | null,
+) {
+  try {
+    const rawName = name?.trim() || email?.split("@")[0] || "My";
+    const wsName = `${rawName}'s Workspace`;
+    let baseSlug = rawName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    if (!baseSlug) baseSlug = "workspace";
+    let slug = `${baseSlug}-workspace`;
+
+    const existing = await db.workspace.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Math.random().toString(36).substring(2, 6)}`;
+    }
+
+    const ws = await db.$transaction(async (tx) => {
+      const createdWs = await tx.workspace.create({
+        data: {
+          name: wsName,
+          slug,
+          createdById: userId,
+          allowDeveloperCreateTasks: false,
+        },
+      });
+
+      await tx.membership.create({
+        data: {
+          userId,
+          workspaceId: createdWs.id,
+          role: "ADMIN",
+          availability: "ACTIVE",
+        },
+      });
+
+      await tx.scoringConfig.create({
+        data: {
+          workspaceId: createdWs.id,
+          enabled: true,
+          rules: defaultScoringRules,
+        },
+      });
+
+      return createdWs;
+    });
+
+    return ws;
+  } catch (err) {
+    console.error("ensureCleanWorkspaceForUser error:", err);
     return null;
   }
 }

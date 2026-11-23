@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 
 export const filterQuerySchema = z.object({
   search: z.string().optional(),

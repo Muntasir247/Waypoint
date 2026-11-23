@@ -18,8 +18,7 @@ export function Topbar() {
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [isCreateTaskOpen, setIsCreateTaskOpen] = React.useState(false);
   const [workspaces, setWorkspaces] = React.useState<WorkspaceItem[]>([]);
-  const [currentWorkspaceName, setCurrentWorkspaceName] =
-    React.useState<string>("Acme Engineering");
+  const [currentWorkspaceName, setCurrentWorkspaceName] = React.useState<string>("");
   const [currentRole, setCurrentRole] = React.useState<string>("ADMIN");
 
   React.useEffect(() => {
@@ -46,13 +45,18 @@ export function Topbar() {
   const userInitials = session?.user?.name
     ? session.user.name
         .split(" ")
+        .filter(Boolean)
         .map((n) => n[0])
         .join("")
         .toUpperCase()
         .slice(0, 2)
-    : "AR";
+    : session?.user?.email
+      ? session.user.email.slice(0, 2).toUpperCase()
+      : "U";
 
-  const userName = session?.user?.name || "Alex Rivera";
+  const userName =
+    session?.user?.name ||
+    (session?.user?.email ? session.user.email.split("@")[0] : "User");
   const userRole =
     currentRole === "ADMIN"
       ? "Tech Lead (Admin)"

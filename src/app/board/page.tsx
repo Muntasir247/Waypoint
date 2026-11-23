@@ -60,7 +60,7 @@ export default async function BoardPage() {
         members={members}
         projects={projects}
         currentUserMembershipId={membership.id}
-        currentUserRole={membership.role}
+        currentUserRole={membership.role as any}
       />
     </AppShell>
   );

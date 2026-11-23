@@ -29,7 +29,7 @@ export function WorkspaceSwitcher({
 
   const workspaces = initialWorkspaces;
   const activeWorkspace = workspaces.find((w) => w.isActive) || workspaces[0];
-  const displayName = currentWorkspaceName || activeWorkspace?.name || "Acme Engineering";
+  const displayName = currentWorkspaceName || activeWorkspace?.name || "Select Workspace";
 
   const handleSwitch = async (workspaceId: string) => {
     if (workspaceId === activeWorkspace?.id) {

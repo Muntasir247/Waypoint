@@ -5,7 +5,7 @@ import { Sparkles, X, AlertCircle } from "lucide-react";
 import { createTaskAction, getSmartSuggestionsAction } from "@/features/tasks/actions";
 import { getProjectsAction } from "@/features/projects/actions";
 import { getMembersAction } from "@/features/members/actions";
-import { Priority } from "@prisma/client";
+import { Priority } from "@/types/enums";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -151,7 +151,7 @@ export function CreateTaskModal({
         milestoneId: null,
         title,
         description: description || null,
-        priority,
+        priority: priority as any,
         estimatePoints,
         dueDate: dueDate || null,
         assigneeId: assigneeId || null,

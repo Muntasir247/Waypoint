@@ -12,7 +12,7 @@ import {
   getMyTasksAction,
 } from "./actions";
 import { AuthorizationError } from "@/lib/permissions";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 
 // Mock user session
 let currentMockUser = {

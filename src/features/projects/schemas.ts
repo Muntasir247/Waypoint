@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ProjectStatus, SprintStatus } from "@prisma/client";
+import { ProjectStatus, SprintStatus } from "@/types/enums";
 
 export const createProjectSchema = z.object({
   name: z.string().min(2, "Project name must be at least 2 characters").max(80),

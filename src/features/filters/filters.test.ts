@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getSavedFiltersAction, createSavedFilterAction, deleteSavedFilterAction } from "./actions";
-import { TaskStatus, Priority } from "@prisma/client";
+import { TaskStatus, Priority } from "@/types/enums";
 
 const currentMockUser = {
   id: "usr_dev_1",

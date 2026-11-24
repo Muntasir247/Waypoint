@@ -91,16 +91,16 @@ export function ProjectDashboardView({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="animate-fade-in space-y-6">
       {/* Metrics Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Metric 1: Completion Percentage */}
-        <div className="border-border bg-card rounded-2xl border p-5 shadow-xs">
+        <div className="border-border bg-card card-interactive rounded-2xl border p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               Completion Rate
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 transition-transform duration-200 group-hover:scale-110 dark:bg-emerald-950 dark:text-emerald-400">
               <CheckCircle2 className="h-4 w-4" />
             </div>
           </div>
@@ -114,19 +114,19 @@ export function ProjectDashboardView({
           </div>
           <div className="bg-muted mt-2 h-1.5 w-full overflow-hidden rounded-full">
             <div
-              className="h-full bg-emerald-500 transition-all duration-300"
+              className="h-full bg-emerald-500 transition-all duration-700 ease-out"
               style={{ width: `${metrics.completionPercentage}%` }}
             />
           </div>
         </div>
 
         {/* Metric 2: Active Tasks */}
-        <div className="border-border bg-card rounded-2xl border p-5 shadow-xs">
+        <div className="border-border bg-card card-interactive rounded-2xl border p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               Active Tasks
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600 transition-transform duration-200 group-hover:scale-110 dark:bg-sky-950 dark:text-sky-400">
               <Clock className="h-4 w-4" />
             </div>
           </div>
@@ -144,12 +144,12 @@ export function ProjectDashboardView({
         </div>
 
         {/* Metric 3: Active Sprints */}
-        <div className="border-border bg-card rounded-2xl border p-5 shadow-xs">
+        <div className="border-border bg-card card-interactive rounded-2xl border p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               Sprint Status
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 transition-transform duration-200 group-hover:scale-110 dark:bg-indigo-950 dark:text-indigo-400">
               <Rocket className="h-4 w-4" />
             </div>
           </div>
@@ -165,12 +165,12 @@ export function ProjectDashboardView({
         </div>
 
         {/* Metric 4: Attention Required */}
-        <div className="border-border bg-card rounded-2xl border p-5 shadow-xs">
+        <div className="border-border bg-card card-interactive rounded-2xl border p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               Alerts
             </span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 text-rose-600 transition-transform duration-200 group-hover:scale-110 dark:bg-rose-950 dark:text-rose-400">
               <AlertTriangle className="h-4 w-4" />
             </div>
           </div>

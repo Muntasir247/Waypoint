@@ -33,7 +33,7 @@ export function ViewSwitcher({ currentView, onViewChange, totalTasks }: ViewSwit
               key={v.id}
               type="button"
               onClick={() => onViewChange(v.id)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-95 ${
                 isActive
                   ? "bg-card text-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"

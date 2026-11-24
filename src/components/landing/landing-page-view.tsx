@@ -120,27 +120,52 @@ export function LandingPageView() {
       <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(99,102,241,0.15),rgba(255,255,255,0))]" />
 
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200/80 bg-indigo-50/80 px-3 py-1 text-xs font-semibold text-indigo-800 shadow-2xs backdrop-blur-xs dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-300">
+        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          {/* Decorative Floating Preview Badges */}
+          <div className="pointer-events-none absolute top-4 left-4 hidden lg:block animate-float">
+            <div className="border-border bg-card/90 flex items-center gap-2.5 rounded-2xl border p-3 shadow-xl backdrop-blur-md">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-600">
+                SC
+              </div>
+              <div className="text-left text-xs">
+                <span className="text-foreground block font-bold">Sarah Chen</span>
+                <span className="text-[10px] font-medium text-emerald-600">98% Match • 8/20 pts</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pointer-events-none absolute -bottom-2 right-6 hidden lg:block animate-float-delayed">
+            <div className="border-border bg-card/90 flex items-center gap-2.5 rounded-2xl border p-3 shadow-xl backdrop-blur-md">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-500/20 text-xs font-bold text-indigo-600">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div className="text-left text-xs">
+                <span className="text-foreground block font-bold">Sprint Burndown</span>
+                <span className="text-[10px] font-medium text-indigo-600">On Track • Velocity 100%</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="animate-fade-in-down inline-flex items-center gap-2 rounded-full border border-indigo-200/80 bg-indigo-50/80 px-3 py-1 text-xs font-semibold text-indigo-800 shadow-2xs backdrop-blur-xs dark:border-indigo-900/60 dark:bg-indigo-950/40 dark:text-indigo-300">
             <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>Capacity-Aware Task Allocation</span>
           </div>
 
-          <h1 className="text-foreground mx-auto mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl sm:leading-tight">
+          <h1 className="text-foreground animate-fade-in-up mx-auto mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl sm:leading-tight">
             Precision task assignment & tracking for{" "}
             <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-500 bg-clip-text text-transparent">
               high-velocity teams
             </span>
           </h1>
 
-          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-base leading-relaxed sm:text-lg">
+          <p className="text-muted-foreground animate-fade-in-up mx-auto mt-6 max-w-2xl text-base leading-relaxed sm:text-lg">
             Waypoint pairs mathematical, capacity-aware task allocation with fair effort-weighted
             recognition. Balance workloads, prevent circular deadlocks, and motivate engineers
             transparently.
           </p>
 
           {/* Quick Hero CTAs */}
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="animate-fade-in-up mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (
               <>
                 <a
@@ -381,7 +406,7 @@ export function LandingPageView() {
           {/* Feature Showcase Card */}
           <div className="border-border bg-card mt-6 overflow-hidden rounded-3xl border p-6 shadow-xl sm:p-10">
             {activeFeatureTab === "ASSIGNMENT" && (
-              <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
+              <div key="ASSIGNMENT" className="animate-fade-in-up grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
                 <div className="space-y-4">
                   <div className="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
                     Mathematical Matchmaking
@@ -447,7 +472,7 @@ export function LandingPageView() {
             )}
 
             {activeFeatureTab === "SCORING" && (
-              <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
+              <div key="SCORING" className="animate-fade-in-up grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
                 <div className="space-y-4">
                   <div className="inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700 dark:bg-amber-950 dark:text-amber-300">
                     Transparent Gamification
@@ -492,7 +517,7 @@ export function LandingPageView() {
             )}
 
             {activeFeatureTab === "VIEWS" && (
-              <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
+              <div key="VIEWS" className="animate-fade-in-up grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
                 <div className="space-y-4">
                   <div className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                     Flexible Execution
@@ -541,7 +566,7 @@ export function LandingPageView() {
             )}
 
             {activeFeatureTab === "REPORTING" && (
-              <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
+              <div key="REPORTING" className="animate-fade-in-up grid grid-cols-1 items-center gap-8 lg:grid-cols-2">
                 <div className="space-y-4">
                   <div className="inline-flex items-center gap-1.5 rounded-md bg-purple-50 px-2 py-0.5 text-xs font-bold text-purple-700 dark:bg-purple-950 dark:text-purple-300">
                     Actionable Insights

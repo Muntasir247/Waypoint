@@ -179,7 +179,7 @@ export function BoardWorkspaceView({
       />
 
       {/* Main View Area */}
-      <div className="min-h-[500px]">
+      <div key={currentView} className="animate-fade-in min-h-[500px]">
         {currentView === "kanban" && (
           <KanbanView
             tasks={filteredTasks}

@@ -48,7 +48,7 @@ export function TaskCard({
   return (
     <div
       onClick={() => onSelectTask?.(task.id)}
-      className={`border-border bg-card group relative cursor-pointer rounded-2xl border p-4 shadow-2xs transition-all hover:border-slate-300 hover:shadow-xs dark:hover:border-slate-700 ${
+      className={`border-border bg-card group relative cursor-pointer rounded-2xl border p-4 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-md dark:hover:border-indigo-500/40 active:scale-[0.99] ${
         isDragging ? "scale-105 rotate-2 border-indigo-500 opacity-90 shadow-xl" : ""
       } ${isSelected ? "border-indigo-500 bg-indigo-50/10 ring-2 ring-indigo-500/20 dark:bg-indigo-950/10" : ""}`}
     >
@@ -88,7 +88,11 @@ export function TaskCard({
           <span
             className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${priorityCfg.badge}`}
           >
-            <span className={`h-1.5 w-1.5 rounded-full ${priorityCfg.dot}`} />
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${priorityCfg.dot} ${
+                task.priority === "CRITICAL" ? "animate-pulse" : ""
+              }`}
+            />
             <span>{priorityCfg.label}</span>
           </span>
         </div>
@@ -101,8 +105,8 @@ export function TaskCard({
 
       {/* Blocked Reason Alert (if blocked) */}
       {task.status === "BLOCKED" && (
-        <div className="mt-2.5 flex items-start gap-1.5 rounded-xl bg-rose-50 p-2 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
-          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rose-600 dark:text-rose-400" />
+        <div className="mt-2.5 flex items-start gap-1.5 rounded-xl border border-rose-200/60 bg-rose-50/90 p-2 text-rose-800 shadow-2xs dark:border-rose-900/40 dark:bg-rose-950/60 dark:text-rose-300">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 animate-pulse text-rose-600 dark:text-rose-400" />
           <p className="line-clamp-2 text-[11px] leading-tight font-medium">
             {task.blockedReason || "Blocked: waiting on prerequisite or external review."}
           </p>

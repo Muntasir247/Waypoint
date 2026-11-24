@@ -428,7 +428,10 @@ export default function SettingsPage() {
 
                   <div className="ml-auto flex items-center gap-2 font-semibold">
                     <span className="text-muted-foreground">Result:</span>
-                    <span className="text-foreground rounded-lg bg-indigo-50 px-2.5 py-1 font-mono text-sm font-bold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
+                    <span
+                      key={previewScore}
+                      className="animate-scale-in inline-block rounded-lg bg-indigo-50 px-2.5 py-1 font-mono text-sm font-bold text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300"
+                    >
                       {previewScore} points
                     </span>
                   </div>

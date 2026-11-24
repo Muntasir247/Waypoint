@@ -112,16 +112,19 @@ export function Sidebar() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "group relative flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition-all duration-150 active:scale-[0.98]",
                     isActive
-                      ? "bg-indigo-50 font-semibold text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      ? "bg-indigo-50 font-semibold text-indigo-600 shadow-2xs dark:bg-indigo-950/60 dark:text-indigo-400"
+                      : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
                   )}
                 >
+                  {isActive && (
+                    <span className="absolute top-1/2 left-0 h-4.5 w-1 -translate-y-1/2 rounded-r-full bg-indigo-600 dark:bg-indigo-400" />
+                  )}
                   <div className="flex items-center gap-3">
                     <Icon
                       className={cn(
-                        "h-4 w-4",
+                        "h-4 w-4 transition-transform duration-150 group-hover:scale-110",
                         isActive ? "text-indigo-600 dark:text-indigo-400" : "text-muted-foreground",
                       )}
                     />
@@ -130,7 +133,7 @@ export function Sidebar() {
                   {displayBadge !== undefined && (
                     <span
                       className={cn(
-                        "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                        "rounded-full px-2 py-0.5 text-[11px] font-semibold transition-transform duration-150 group-hover:scale-105",
                         item.badgeVariant === "primary" &&
                           "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300",
                         item.badgeVariant === "warning" &&
@@ -245,7 +248,11 @@ export function Sidebar() {
                 <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
                 Active Sprint
               </span>
-              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                </span>
                 On Track
               </span>
             </div>

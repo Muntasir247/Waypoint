@@ -164,12 +164,13 @@ export function NotificationBell() {
           setIsOpen(!isOpen);
           if (!isOpen) fetchNotifications();
         }}
-        className="border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground relative inline-flex h-9 w-9 items-center justify-center rounded-lg border p-2 shadow-xs transition-colors"
+        className="border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground group relative inline-flex h-9 w-9 items-center justify-center rounded-xl border p-2 shadow-xs transition-all duration-150 active:scale-95"
       >
-        <Bell className="h-4 w-4" />
+        <Bell className="h-4 w-4 transition-transform duration-200 group-hover:rotate-12" />
         {unreadCount > 0 && (
-          <span className="ring-card absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 font-mono text-[10px] font-bold text-white ring-2">
-            {unreadCount > 9 ? "9+" : unreadCount}
+          <span className="ring-card animate-scale-in absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 font-mono text-[10px] font-bold text-white ring-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative">{unreadCount > 9 ? "9+" : unreadCount}</span>
           </span>
         )}
       </button>

@@ -197,15 +197,24 @@ export function InviteModal({
               </div>
             </div>
 
-            <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs text-indigo-900 dark:border-indigo-900/40 dark:bg-indigo-950/30 dark:text-indigo-200">
-              <div className="flex items-start gap-2">
-                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
-                <span>
-                  Demo Mode: An invitation will be registered and recorded into the{" "}
-                  <strong>Demo Outbox</strong> with full simulation.
-                </span>
+            {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (
+              <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs text-indigo-900 dark:border-indigo-900/40 dark:bg-indigo-950/30 dark:text-indigo-200">
+                <div className="flex items-start gap-2">
+                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  <span>
+                    Demo Mode: An invitation will be registered and recorded into the{" "}
+                    <strong>Demo Outbox</strong> with full simulation.
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="rounded-xl border border-indigo-100/70 bg-indigo-50/40 p-3 text-xs text-indigo-900 dark:border-indigo-900/30 dark:bg-indigo-950/20 dark:text-indigo-200">
+                <div className="flex items-start gap-2">
+                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  <span>An invitation link with 7-day validity will be generated and ready to copy.</span>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center justify-end gap-2.5 pt-2">
               <button

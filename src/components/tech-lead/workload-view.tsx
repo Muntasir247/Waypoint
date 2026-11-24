@@ -182,10 +182,10 @@ export function WorkloadView({
           return (
             <div
               key={workload.membershipId}
-              className={`border-border bg-card rounded-2xl border shadow-xs transition-all ${
+              className={`border-border bg-card card-interactive rounded-2xl border shadow-xs transition-all duration-200 ${
                 workload.isOverloaded
-                  ? "border-rose-200 dark:border-rose-900/50"
-                  : "hover:border-slate-300 dark:hover:border-slate-700"
+                  ? "border-rose-300 dark:border-rose-900/60 shadow-rose-500/5"
+                  : "hover:border-indigo-400/50 hover:shadow-md dark:hover:border-indigo-500/40"
               }`}
             >
               {/* Card Header */}
@@ -274,9 +274,9 @@ export function WorkloadView({
 
                     <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
                       <div
-                        className={`h-full transition-all duration-300 ${
+                        className={`h-full transition-all duration-700 ease-out ${
                           workload.isOverloaded
-                            ? "bg-rose-500"
+                            ? "bg-rose-500 animate-pulse"
                             : capacityPercent > 70
                               ? "bg-amber-500"
                               : "bg-emerald-500"

@@ -101,8 +101,17 @@ export function InviteModal({
                 <span>Invitation Sent & Generated!</span>
               </div>
               <p className="mt-1 text-xs">
-                A simulated email has been dispatched to <strong>{email}</strong> (viewable in the
-                Demo Outbox). You can also copy and share this link directly:
+                {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (
+                  <>
+                    A simulated email has been dispatched to <strong>{email}</strong> (viewable in
+                    the Demo Outbox). You can also copy and share this link directly:
+                  </>
+                ) : (
+                  <>
+                    An invitation has been generated for <strong>{email}</strong>. You can copy and
+                    share this link directly:
+                  </>
+                )}
               </p>
             </div>
 

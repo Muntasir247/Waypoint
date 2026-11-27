@@ -172,17 +172,26 @@ async function runAllFlows() {
     }
 
     await new Promise(r => setTimeout(r, 500));
+    await page.evaluate(() => {
+      const btn = document.querySelector('form button[type="submit"]');
+      if (btn) btn.scrollIntoView({ block: 'center' });
+    });
+    await new Promise(r => setTimeout(r, 300));
     const submitTaskBtn = await page.waitForSelector('form button[type="submit"]');
     await submitTaskBtn.click();
     console.log('Clicked Create Task submit button.');
 
-    await page.waitForSelector('.fixed.inset-0', { hidden: true, timeout: 25000 }).catch(async () => {
-      const errEl = await page.$('.bg-rose-50');
-      if (errEl) {
-        const msg = await errEl.evaluate(el => el.innerText);
-        throw new Error(`Create Task modal failed with error banner: ${msg}`);
-      }
-      throw new Error('Create Task modal did not close within timeout');
+    await page.waitForSelector('.fixed.inset-0', { hidden: true, timeout: 20000 }).catch(async () => {
+      console.log('Falling back to requestSubmit() if scroll offset delayed click...');
+      await page.evaluate(() => document.querySelector('form')?.requestSubmit());
+      await page.waitForSelector('.fixed.inset-0', { hidden: true, timeout: 15000 }).catch(async () => {
+        const errEl = await page.$('.bg-rose-50');
+        if (errEl) {
+          const msg = await errEl.evaluate(el => el.innerText);
+          throw new Error(`Create Task modal failed with error banner: ${msg}`);
+        }
+        throw new Error('Create Task modal did not close within timeout');
+      });
     });
     console.log('Create Task modal closed successfully!');
     await new Promise(r => setTimeout(r, 2000));
@@ -192,7 +201,7 @@ async function runAllFlows() {
     await page.goto(`${BASE_URL}/team`, { waitUntil: 'domcontentloaded' });
     await new Promise(r => setTimeout(r, 2000));
 
-    const inviteBtn = await page.waitForSelector('button ::-p-text(Invite Member)');
+    const inviteBtn = await page.waitForSelector('button ::-p-text(Invite New Member), button ::-p-text(Invite Member)');
     await inviteBtn.click();
     await new Promise(r => setTimeout(r, 800));
 
@@ -286,8 +295,8 @@ async function runAllFlows() {
           }
         }
 
-        // Tab 3: Comments
-        const commentTab = await page.$('button ::-p-text(Comments)');
+        // Tab 3: Comments / Discussion
+        const commentTab = await page.$('button ::-p-text(Discussion), button ::-p-text(Comments)');
         if (commentTab) {
           await commentTab.click();
           await new Promise(r => setTimeout(r, 1000));

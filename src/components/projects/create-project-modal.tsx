@@ -32,7 +32,7 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }: Create
       const res = await createProjectAction({
         name,
         description: description || null,
-        status,
+        status: status as "ACTIVE" | "PLANNING" | "ON_HOLD" | "COMPLETED",
         targetDate: targetDate || null,
       });
 

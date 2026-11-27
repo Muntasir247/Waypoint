@@ -166,7 +166,8 @@ export function ProjectsDirectoryView({ initialProjects }: ProjectsDirectoryView
                   <div className="flex items-center justify-between">
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wider uppercase ${
-                        (statusColors as Record<string, string>)[p.status] || "bg-muted text-muted-foreground"
+                        (statusColors as Record<string, string>)[p.status] ||
+                        "bg-muted text-muted-foreground"
                       }`}
                     >
                       {p.status.replace("_", " ")}
@@ -234,6 +235,8 @@ export function ProjectsDirectoryView({ initialProjects }: ProjectsDirectoryView
       <CreateTaskModal
         isOpen={isCreateTaskOpen}
         onClose={() => setIsCreateTaskOpen(false)}
+        defaultProjectId={projects[0]?.id ?? ""}
+        initialProjects={projects.map((p) => ({ id: p.id, name: p.name }))}
         onTaskCreated={refreshProjects}
       />
     </div>

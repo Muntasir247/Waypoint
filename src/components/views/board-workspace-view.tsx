@@ -219,6 +219,7 @@ export function BoardWorkspaceView({
         isOpen={isCreateTaskOpen}
         onClose={() => setIsCreateTaskOpen(false)}
         defaultProjectId={filter.projectId || (projects[0]?.id ?? "")}
+        initialProjects={projects}
         onTaskCreated={() => {
           setIsCreateTaskOpen(false);
           refreshTasks();

@@ -515,6 +515,7 @@ export function ProjectDetailView({ initialProject, projectId }: ProjectDetailVi
         isOpen={isCreateTaskOpen}
         onClose={() => setIsCreateTaskOpen(false)}
         defaultProjectId={projectId}
+        initialProjects={[{ id: project.id, name: project.name }]}
         onTaskCreated={refreshProject}
       />
       <CreateSprintModal

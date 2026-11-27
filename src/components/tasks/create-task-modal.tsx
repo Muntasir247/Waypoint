@@ -14,6 +14,7 @@ interface CreateTaskModalProps {
   defaultProjectId?: string;
   defaultSprintId?: string;
   onTaskCreated?: () => void;
+  initialProjects?: ProjectOption[];
 }
 
 interface ProjectOption {
@@ -45,9 +46,12 @@ export function CreateTaskModal({
   defaultProjectId,
   defaultSprintId,
   onTaskCreated,
+  initialProjects,
 }: CreateTaskModalProps) {
   const router = useRouter();
-  const [projectId, setProjectId] = React.useState(defaultProjectId || "");
+  const [projectId, setProjectId] = React.useState(
+    defaultProjectId || initialProjects?.[0]?.id || "",
+  );
   const [sprintId, setSprintId] = React.useState(defaultSprintId || "");
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -57,7 +61,7 @@ export function CreateTaskModal({
   const [assigneeId, setAssigneeId] = React.useState("");
   const [labelsInput, setLabelsInput] = React.useState("");
 
-  const [projects, setProjects] = React.useState<ProjectOption[]>([]);
+  const [projects, setProjects] = React.useState<ProjectOption[]>(initialProjects || []);
   const [members, setMembers] = React.useState<MemberOption[]>([]);
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false);
@@ -99,7 +103,7 @@ export function CreateTaskModal({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, defaultProjectId, defaultSprintId]);
+  }, [isOpen, defaultProjectId, defaultSprintId, initialProjects]);
 
   // Fetch smart suggestions when estimatePoints, labels or title changes
   React.useEffect(() => {
@@ -153,7 +157,7 @@ export function CreateTaskModal({
         milestoneId: null,
         title,
         description: description || null,
-        priority,
+        priority: priority as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
         estimatePoints,
         dueDate: dueDate || null,
         assigneeId: assigneeId || null,

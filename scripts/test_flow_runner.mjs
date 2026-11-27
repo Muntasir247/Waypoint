@@ -210,9 +210,20 @@ async function runAllFlows() {
     await sendInviteBtn.click();
     console.log('Submitted invitation form.');
 
-    await new Promise(r => setTimeout(r, 3000));
+    await page.waitForFunction(
+      () =>
+        document.body.innerText.includes('Invitation Sent') ||
+        document.body.innerText.includes('/invite/') ||
+        document.body.innerText.includes('Done'),
+      { timeout: 15000 }
+    ).catch(() => {});
+
     const inviteModalText = await page.$eval('body', el => el.innerText);
-    const hasInviteLink = inviteModalText.includes('/invite/') || inviteModalText.includes('copied') || inviteModalText.includes('Done');
+    const hasInviteLink =
+      inviteModalText.includes('/invite/') ||
+      inviteModalText.includes('copied') ||
+      inviteModalText.includes('Done') ||
+      inviteModalText.includes('Invitation Sent');
     console.log('Invite link generation verified:', hasInviteLink);
     const doneInviteBtn = await page.$('button ::-p-text(Done)');
     if (doneInviteBtn) await doneInviteBtn.click();

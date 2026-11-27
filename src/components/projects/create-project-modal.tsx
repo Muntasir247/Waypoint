@@ -29,14 +29,12 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }: Create
     setIsSubmitting(true);
 
     try {
-      console.log("[CreateProjectModal] calling createProjectAction with:", { name, status });
       const res = await createProjectAction({
         name,
         description: description || null,
         status,
         targetDate: targetDate || null,
       });
-      console.log("[CreateProjectModal] createProjectAction result:", res);
 
       if (res.error) {
         setError(res.error);

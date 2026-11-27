@@ -80,8 +80,8 @@ export function CreateTaskModal({
       if (projRes.projects) {
         const list: ProjectOption[] = projRes.projects.map((p) => ({ id: p.id, name: p.name }));
         setProjects(list);
-        if (!defaultProjectId && list.length > 0) {
-          setProjectId((prev) => prev || list[0].id);
+        if (list.length > 0) {
+          setProjectId((prev) => prev || defaultProjectId || list[0].id);
         }
       }
 

@@ -55,8 +55,7 @@ export function Topbar() {
       : "U";
 
   const userName =
-    session?.user?.name ||
-    (session?.user?.email ? session.user.email.split("@")[0] : "User");
+    session?.user?.name || (session?.user?.email ? session.user.email.split("@")[0] : "User");
   const userRole =
     currentRole === "ADMIN"
       ? "Tech Lead (Admin)"

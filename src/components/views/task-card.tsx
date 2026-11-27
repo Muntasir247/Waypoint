@@ -48,7 +48,7 @@ export function TaskCard({
   return (
     <div
       onClick={() => onSelectTask?.(task.id)}
-      className={`border-border bg-card group relative cursor-pointer rounded-2xl border p-4 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-md dark:hover:border-indigo-500/40 active:scale-[0.99] ${
+      className={`border-border bg-card group relative cursor-pointer rounded-2xl border p-4 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-indigo-400/50 hover:shadow-md active:scale-[0.99] dark:hover:border-indigo-500/40 ${
         isDragging ? "scale-105 rotate-2 border-indigo-500 opacity-90 shadow-xl" : ""
       } ${isSelected ? "border-indigo-500 bg-indigo-50/10 ring-2 ring-indigo-500/20 dark:bg-indigo-950/10" : ""}`}
     >

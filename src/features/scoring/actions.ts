@@ -63,8 +63,7 @@ export async function getWorkspaceScoringConfigAction(): Promise<{
       defaultScoringRules.bounceDeductionPercent,
     maxBounceDeductionPercent:
       rawRules.maxBounceDeductionPercent ?? defaultScoringRules.maxBounceDeductionPercent,
-    noDueDateMultiplier:
-      rawRules.noDueDateMultiplier ?? defaultScoringRules.noDueDateMultiplier,
+    noDueDateMultiplier: rawRules.noDueDateMultiplier ?? defaultScoringRules.noDueDateMultiplier,
     capacityLimit:
       rawRules.capacityLimit ?? rawRules.capacityLimitPoints ?? defaultScoringRules.capacityLimit,
   };

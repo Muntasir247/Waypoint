@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Compass, ArrowRight, Loader2, CheckCircle2, Mail } from "lucide-react";
+import { Compass, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { registerAction } from "@/features/auth/actions";

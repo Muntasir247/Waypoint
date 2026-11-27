@@ -184,7 +184,7 @@ export function WorkloadView({
               key={workload.membershipId}
               className={`border-border bg-card card-interactive rounded-2xl border shadow-xs transition-all duration-200 ${
                 workload.isOverloaded
-                  ? "border-rose-300 dark:border-rose-900/60 shadow-rose-500/5"
+                  ? "border-rose-300 shadow-rose-500/5 dark:border-rose-900/60"
                   : "hover:border-indigo-400/50 hover:shadow-md dark:hover:border-indigo-500/40"
               }`}
             >
@@ -276,7 +276,7 @@ export function WorkloadView({
                       <div
                         className={`h-full transition-all duration-700 ease-out ${
                           workload.isOverloaded
-                            ? "bg-rose-500 animate-pulse"
+                            ? "animate-pulse bg-rose-500"
                             : capacityPercent > 70
                               ? "bg-amber-500"
                               : "bg-emerald-500"

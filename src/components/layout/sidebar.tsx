@@ -188,16 +188,14 @@ export function Sidebar() {
                       <span className="truncate">{p.name}</span>
                     </div>
                     {p.activeSprint && (
-                      <span className="text-muted-foreground text-[10px] shrink-0">
+                      <span className="text-muted-foreground shrink-0 text-[10px]">
                         {p.activeSprint.name}
                       </span>
                     )}
                   </Link>
                 ))
               ) : (
-                <div className="text-muted-foreground px-3 py-1.5 text-xs">
-                  No projects yet
-                </div>
+                <div className="text-muted-foreground px-3 py-1.5 text-xs">No projects yet</div>
               )}
             </div>
           )}

@@ -2,8 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import type { Prisma, Workspace } from "@prisma/client";
-import { Role } from "@/types/enums";
+import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";

@@ -8,7 +8,8 @@ const globalForPrisma = globalThis as unknown as {
 function createPrismaClient(): PrismaClient {
   const tursoUrl =
     process.env.TURSO_DATABASE_URL ||
-    (process.env.DATABASE_URL?.startsWith("libsql:") || process.env.DATABASE_URL?.startsWith("https:")
+    (process.env.DATABASE_URL?.startsWith("libsql:") ||
+    process.env.DATABASE_URL?.startsWith("https:")
       ? process.env.DATABASE_URL
       : undefined);
   const tursoAuthToken = process.env.TURSO_AUTH_TOKEN;

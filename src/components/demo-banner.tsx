@@ -21,7 +21,12 @@ export function DemoBanner() {
     setIsDismissed(true);
   };
 
-  if (process.env.NEXT_PUBLIC_DEMO_MODE !== "true" || !isClient || dismissedInSession || isDismissed) {
+  if (
+    process.env.NEXT_PUBLIC_DEMO_MODE !== "true" ||
+    !isClient ||
+    dismissedInSession ||
+    isDismissed
+  ) {
     return null;
   }
 

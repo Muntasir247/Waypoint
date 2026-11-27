@@ -211,7 +211,9 @@ export function InviteModal({
               <div className="rounded-xl border border-indigo-100/70 bg-indigo-50/40 p-3 text-xs text-indigo-900 dark:border-indigo-900/30 dark:bg-indigo-950/20 dark:text-indigo-200">
                 <div className="flex items-start gap-2">
                   <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
-                  <span>An invitation link with 7-day validity will be generated and ready to copy.</span>
+                  <span>
+                    An invitation link with 7-day validity will be generated and ready to copy.
+                  </span>
                 </div>
               </div>
             )}

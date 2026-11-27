@@ -61,7 +61,9 @@ export default function ForgotPasswordPage() {
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <h2 className="text-foreground mt-3 text-base font-semibold">
-              {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? "Check Demo Outbox" : "Check Your Inbox"}
+              {process.env.NEXT_PUBLIC_DEMO_MODE === "true"
+                ? "Check Demo Outbox"
+                : "Check Your Inbox"}
             </h2>
             <p className="text-muted-foreground mt-2 text-xs">
               {process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? (

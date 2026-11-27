@@ -142,7 +142,9 @@ export function CreateTaskModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!projectId) {
+    const effectiveProjectId =
+      projectId || defaultProjectId || initialProjects?.[0]?.id || projects[0]?.id || "";
+    if (!effectiveProjectId) {
       setError("Please select a project");
       return;
     }
@@ -152,7 +154,7 @@ export function CreateTaskModal({
 
     try {
       const res = await createTaskAction({
-        projectId,
+        projectId: effectiveProjectId,
         sprintId: sprintId || null,
         milestoneId: null,
         title,
@@ -234,7 +236,9 @@ export function CreateTaskModal({
               </label>
               <select
                 required
-                value={projectId}
+                value={
+                  projectId || defaultProjectId || initialProjects?.[0]?.id || projects[0]?.id || ""
+                }
                 onChange={(e) => setProjectId(e.target.value)}
                 className="border-border bg-background text-foreground focus:ring-ring mt-1 w-full rounded-xl border px-3 py-2 text-sm outline-none focus:ring-2"
               >
@@ -456,7 +460,11 @@ export function CreateTaskModal({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !title.trim() || !projectId}
+              disabled={
+                isSubmitting ||
+                !title.trim() ||
+                !(projectId || defaultProjectId || initialProjects?.[0]?.id || projects[0]?.id)
+              }
               className="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700 disabled:opacity-50"
             >
               {isSubmitting ? "Creating..." : "Create Task"}

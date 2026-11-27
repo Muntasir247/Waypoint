@@ -110,15 +110,19 @@ export function CommandPalette({ onOpenCreateTask }: CommandPaletteProps) {
         shortcut: "G A",
         onSelect: () => router.push("/audit-log"),
       },
-      {
-        id: "nav-outbox",
-        title: "Demo Outbox",
-        subtitle: "Simulated transactional emails & digests",
-        category: "Navigation",
-        icon: Mail,
-        shortcut: "G D",
-        onSelect: () => router.push("/demo-outbox"),
-      },
+      ...(process.env.NEXT_PUBLIC_DEMO_MODE === "true"
+        ? ([
+            {
+              id: "nav-outbox",
+              title: "Demo Outbox",
+              subtitle: "Simulated transactional emails & digests",
+              category: "Navigation" as const,
+              icon: Mail,
+              shortcut: "G D",
+              onSelect: () => router.push("/demo-outbox"),
+            },
+          ] as CommandItem[])
+        : []),
       {
         id: "nav-settings",
         title: "Workspace Settings",
@@ -479,12 +483,14 @@ export function CommandPalette({ onOpenCreateTask }: CommandPaletteProps) {
                   G then A
                 </kbd>
               </div>
-              <div className="flex items-center justify-between">
-                <span>Go to Demo Outbox</span>
-                <kbd className="border-border bg-muted rounded border px-2 py-0.5 font-mono text-[11px]">
-                  G then D
-                </kbd>
-              </div>
+              {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+                <div className="flex items-center justify-between">
+                  <span>Go to Demo Outbox</span>
+                  <kbd className="border-border bg-muted rounded border px-2 py-0.5 font-mono text-[11px]">
+                    G then D
+                  </kbd>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span>Go to Workspace Settings</span>
                 <kbd className="border-border bg-muted rounded border px-2 py-0.5 font-mono text-[11px]">

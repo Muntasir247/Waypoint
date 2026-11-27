@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { FolderGit2, X, AlertCircle } from "lucide-react";
 import { createProjectAction } from "@/features/projects/actions";
 import { ProjectStatus } from "@/types/enums";
@@ -12,6 +13,7 @@ interface CreateProjectModalProps {
 }
 
 export function CreateProjectModal({ isOpen, onClose, onProjectCreated }: CreateProjectModalProps) {
+  const router = useRouter();
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [status, setStatus] = React.useState<ProjectStatus>(ProjectStatus.ACTIVE);
@@ -30,7 +32,7 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }: Create
       const res = await createProjectAction({
         name,
         description: description || null,
-        status: status as any,
+        status,
         targetDate: targetDate || null,
       });
 
@@ -42,6 +44,7 @@ export function CreateProjectModal({ isOpen, onClose, onProjectCreated }: Create
 
       if (res.project) {
         onProjectCreated?.({ id: res.project.id, name: res.project.name });
+        router.refresh();
       }
       onClose();
     } catch (err: unknown) {

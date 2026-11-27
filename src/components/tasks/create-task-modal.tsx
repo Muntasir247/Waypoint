@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { Sparkles, X, AlertCircle } from "lucide-react";
 import { createTaskAction, getSmartSuggestionsAction } from "@/features/tasks/actions";
 import { getProjectsAction } from "@/features/projects/actions";
@@ -45,6 +46,7 @@ export function CreateTaskModal({
   defaultSprintId,
   onTaskCreated,
 }: CreateTaskModalProps) {
+  const router = useRouter();
   const [projectId, setProjectId] = React.useState(defaultProjectId || "");
   const [sprintId, setSprintId] = React.useState(defaultSprintId || "");
   const [title, setTitle] = React.useState("");
@@ -151,7 +153,7 @@ export function CreateTaskModal({
         milestoneId: null,
         title,
         description: description || null,
-        priority: priority as any,
+        priority,
         estimatePoints,
         dueDate: dueDate || null,
         assigneeId: assigneeId || null,
@@ -164,6 +166,7 @@ export function CreateTaskModal({
       }
 
       onTaskCreated?.();
+      router.refresh();
       onClose();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create task");

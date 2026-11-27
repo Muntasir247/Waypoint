@@ -193,7 +193,9 @@ export async function requestPasswordResetAction(formData: unknown): Promise<Act
   return {
     success: true,
     message:
-      "If an account exists with that email, a password reset link has been dispatched to the Demo Outbox.",
+      process.env.NEXT_PUBLIC_DEMO_MODE === "true"
+        ? "If an account exists with that email, a password reset link has been dispatched to the Demo Outbox."
+        : "If an account exists with that email, a password reset link has been sent to your email address.",
   };
 }
 

@@ -20,7 +20,11 @@ export default function ForgotPasswordPage() {
       const result = await requestPasswordResetAction({ email });
       if (result.success) {
         setSubmitted(true);
-        toast.success("Reset link simulated in Demo Outbox!");
+        toast.success(
+          process.env.NEXT_PUBLIC_DEMO_MODE === "true"
+            ? "Reset link simulated in Demo Outbox!"
+            : "Reset link sent to your email address!",
+        );
       } else {
         toast.error(result.message || "Failed to process request.");
       }
